@@ -193,7 +193,7 @@ KPCCME = function(Y, X = NULL, Z, ky, kx, kxz, eps, tol = 1e-3) {
 #'
 #' Variable selection with KPC using directed Knn graph
 #'
-#' A stepwise forward selection of variables using KPC. At each step the xj maximizing \rho^2(Y,Xj|selected Xi) is selected.
+#' A stepwise forward selection of variables using KPC. At each step the xj maximizing rho^2(Y,Xj|selected Xi) is selected.
 #'
 #' @param X Matrix of predictors (n by dx)
 #' @param Y Vector of responses (n by dy)
@@ -210,7 +210,7 @@ KPCCME = function(Y, X = NULL, Z, ky, kx, kxz, eps, tol = 1e-3) {
 #' set.seed(1)
 #' X = matrix(rnorm(n * p), ncol = p)
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n,sd = 0.5)
-#' Varselect_Knn(Y, X, rbfdot(1), Knn=10, num_features=NULL, stop=TRUE, numCores=7)
+#' Varselect_Knn(Y, X, kernlab::rbfdot(1), Knn=10, num_features=NULL, stop=TRUE, numCores=7)
 ## It selects X1, X2, X3. FOCI selects X81
 # colnames(X) = paste0(rep("X", p), seq(1, p))
 # FOCI::foci(Y, X, numCores = 7)$selectedVar$index
