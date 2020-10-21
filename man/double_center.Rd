@@ -12,3 +12,6 @@ double_center(M)
 \description{
 Double-centering a squared matrix
 }
+\details{
+Given a square matrix A, the function return HAH, where H = diag(n) - 1/n is the centering matrix.
+}

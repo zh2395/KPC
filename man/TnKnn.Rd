@@ -2,7 +2,7 @@
 % Please edit documentation in R/KPC.R
 \name{TnKnn}
 \alias{TnKnn}
-\title{Tn with Knn graph}
+\title{Tn with geometric graphs}
 \usage{
 TnKnn(Y, X, k, Knn = 1)
 }
@@ -13,14 +13,16 @@ TnKnn(Y, X, k, Knn = 1)
 
 \item{k}{a kernel function k(y,y')}
 
-\item{Knn}{The number of K-nearest neighbor to use}
+\item{Knn}{The number of K-nearest neighbor to use; or "MST".}
 }
 \value{
 Tn: a numeric number
 }
 \description{
-Calculate Tn using directed Knn graph.
+Calculate Tn using directed Knn graph or minimum spanning tree.
 }
 \details{
 Tn is an estimate of E[E[k(Y1,Y1')|X]], with Y1, Y1' drawn iid from Y|X, given X.
+Kernels provided in the package "kernlab" are recommended, e.g. rbfdot(sigma), vanilladot().
+For continuous data, "breaktie" can be set to FALSE for faster computation.
 }

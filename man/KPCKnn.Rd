@@ -15,7 +15,7 @@ KPCKnn(Y, X, Z, k, Knn = 1, trans_inv = FALSE)
 
 \item{k}{a kernel function k(y,y')}
 
-\item{Knn}{number of nearest neighbor to use}
+\item{Knn}{number of nearest neighbor to use; or "MST"}
 
 \item{trans_inv}{TRUE or FALSE. Is kernel k translation invariant?}
 }

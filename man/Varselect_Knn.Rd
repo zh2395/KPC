@@ -13,7 +13,7 @@ Varselect_Knn(Y, X, k, Knn, num_features = NULL, stop = TRUE, numCores = 1)
 
 \item{k}{the kernel on Y: k(y,y')}
 
-\item{Knn}{the number of nearest neighbor}
+\item{Knn}{the number of nearest neighbor; or "MST"}
 
 \item{num_features}{Number of variables to be selected, cannot be larger than dx. The default value is NULL and in that
 case it will be set equal to dx. If stop == TRUE (see below), then num_features is irrelevant.}
@@ -29,13 +29,13 @@ a vector of the indices from 1,...,dx of the selected variables
 Variable selection with KPC using directed Knn graph
 }
 \details{
-A stepwise forward selection of variables using KPC. At each step the xj maximizing \rho^2(Y,Xj|selected Xi) is selected.
+A stepwise forward selection of variables using KPC. At each step the Xj maximizing rho^2(Y,Xj | selected Xi) is selected.
 }
 \examples{
 n = 200
 p = 100
 set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
-Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n,sd = 0.5)
-Varselect_Knn(Y, X, rbfdot(1), Knn=10, num_features=NULL, stop=TRUE, numCores=7)
+Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)*0.5
+Varselect_Knn(Y, X, kernlab::rbfdot(1), Knn=10)
 }

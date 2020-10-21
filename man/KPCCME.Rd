@@ -4,7 +4,7 @@
 \alias{KPCCME}
 \title{KPCCME}
 \usage{
-KPCCME(Y, X = NULL, Z, ky, kx, kxz, eps, tol = 0.001)
+KPCCME(Y, X = NULL, Z, ky, kx, kxz, eps, appro = TRUE, tol = 0.001)
 }
 \arguments{
 \item{Y}{Matrix (n by dy)}
@@ -21,6 +21,8 @@ KPCCME(Y, X = NULL, Z, ky, kx, kxz, eps, tol = 0.001)
 
 \item{eps}{A small regularization parameter for inverting the empirical cross-covariance operator}
 
+\item{appro}{whether to use incomplete Cholesky decomposition for approximation}
+
 \item{tol}{Tolerance used for incomplete Cholesky decomposition}
 }
 \description{
@@ -31,6 +33,6 @@ kx,ky,kxz should be kernels provided in the R package "kernlab", so that kernelM
 }
 \examples{
 data("medical")
-KPCCME(med$D,med$C,med$U,rbfdot(1/(2*median(dist(med$D))^2)),rbfdot(1/(2*median(dist(med$C))^2)), rbfdot(1/(2*median(dist(cbind(med$C,med$U)))^2)), 1e-3,1e-12) # 0.0003175344 D is independent of U given C
-KPCCME(med$D,med$U,med$C,rbfdot(1/(2*median(dist(med$D))^2)),rbfdot(1/(2*median(dist(med$U))^2)), rbfdot(1/(2*median(dist(cbind(med$C,med$U)))^2)), 1e-3,1e-12) # 0.6834605 D is associated with C controlling U
+KPCCME(med$D,med$C,med$U,rbfdot(1/(2*median(dist(med$D))^2)),rbfdot(1/(2*median(dist(med$C))^2)), rbfdot(1/(2*median(dist(cbind(med$C,med$U)))^2)), 1e-3,F) # 0.0003175344 D is independent of U given C
+KPCCME(med$D,med$U,med$C,rbfdot(1/(2*median(dist(med$D))^2)),rbfdot(1/(2*median(dist(med$U))^2)), rbfdot(1/(2*median(dist(cbind(med$C,med$U)))^2)), 1e-3,F) # 0.6834605 D is associated with C controlling U
 }
