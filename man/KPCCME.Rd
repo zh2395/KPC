@@ -2,37 +2,49 @@
 % Please edit documentation in R/KPC.R
 \name{KPCCME}
 \alias{KPCCME}
-\title{KPCCME}
+\title{Kernel partial correlation with CME method}
 \usage{
-KPCCME(Y, X = NULL, Z, ky, kx, kxz, eps, appro = TRUE, tol = 0.001)
+KPCCME(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 0.001)
 }
 \arguments{
-\item{Y}{Matrix (n by dy)}
+\item{Y}{a matrix (n by dy)}
 
-\item{X}{Matrix (n by dx) or NULL if X is empty}
+\item{X}{a matrix (n by dx) or \code{NULL} if \eqn{X} is empty}
 
-\item{Z}{Matrix (n by dz)}
+\item{Z}{a matrix (n by dz)}
 
-\item{ky}{a kernel function k(y,y')}
+\item{ky}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}}
 
-\item{kx}{kernel function for X}
+\item{kx}{the kernel function for \eqn{X}}
 
-\item{kxz}{kernel function for (X,Z) or for Z if X is empty}
+\item{kxz}{the kernel function for \eqn{(X, Z)} or for \eqn{Z} if \eqn{X} is empty}
 
-\item{eps}{A small regularization parameter for inverting the empirical cross-covariance operator}
+\item{eps}{a small positive regularization parameter for inverting the empirical cross-covariance operator}
 
 \item{appro}{whether to use incomplete Cholesky decomposition for approximation}
 
-\item{tol}{Tolerance used for incomplete Cholesky decomposition}
+\item{tol}{tolerance used for incomplete Cholesky decomposition (\code{inchol} in package \code{kernlab})}
 }
 \description{
-Calculate KPC rho^2(Y,Z|X) with CME method
+Calculate Kernel partial correlation coefficient (KPC) with cconditional mean embedding method.
 }
 \details{
-kx,ky,kxz should be kernels provided in the R package "kernlab", so that kernelMatrix can be applied
+The kernel partial correlation squared (KPC) measures the conditional dependency
+between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
+It converges to the population quantity which is between 0 and 1.
+A small value indicates low conditional dependency between \eqn{Y} and \eqn{Z} given \eqn{X}, and
+a large value indicates stronger conditional dependence.
+If \code{X = NULL}, it measures the unconditional dependency between \eqn{Y} and \eqn{Z}.
 }
 \examples{
-data("medical")
+library(kernlab)
+data("med")
 KPCCME(med$D,med$C,med$U,rbfdot(1/(2*median(dist(med$D))^2)),rbfdot(1/(2*median(dist(med$C))^2)), rbfdot(1/(2*median(dist(cbind(med$C,med$U)))^2)), 1e-3,F) # 0.0003175344 D is independent of U given C
 KPCCME(med$D,med$U,med$C,rbfdot(1/(2*median(dist(med$D))^2)),rbfdot(1/(2*median(dist(med$U))^2)), rbfdot(1/(2*median(dist(cbind(med$C,med$U)))^2)), 1e-3,F) # 0.6834605 D is associated with C controlling U
+n = 1000
+x = runif(n)
+z = runif(n)
+y = (x + z) \%\% 1
+KPCCME(y, x, z, rbfdot(5), rbfdot(5), rbfdot(2), 1e-3/n^(0.49), appro = F)
+KPCCME(y, x, z, rbfdot(5), rbfdot(5), rbfdot(2), 1e-3/n^(0.49), appro = T, tol = 1e-5)
 }

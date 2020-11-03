@@ -2,27 +2,26 @@
 % Please edit documentation in R/KPC.R
 \name{TnKnn}
 \alias{TnKnn}
-\title{Tn with geometric graphs}
+\title{\eqn{T_n} with geometric graphs}
 \usage{
 TnKnn(Y, X, k, Knn = 1)
 }
 \arguments{
-\item{Y}{Matrix of response (n by dy)}
+\item{Y}{a matrix of response (n by dy)}
 
-\item{X}{Matrix of predictors (n by dx)}
+\item{X}{a matrix of predictors (n by dx)}
 
-\item{k}{a kernel function k(y,y')}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}}
 
-\item{Knn}{The number of K-nearest neighbor to use; or "MST".}
+\item{Knn}{the number of K-nearest neighbor to use; or "MST".}
 }
 \value{
 Tn: a numeric number
 }
 \description{
-Calculate Tn using directed Knn graph or minimum spanning tree.
+Calculate \eqn{T_n} using directed Knn graph or minimum spanning tree (MST).
 }
 \details{
-Tn is an estimate of E[E[k(Y1,Y1')|X]], with Y1, Y1' drawn iid from Y|X, given X.
-Kernels provided in the package "kernlab" are recommended, e.g. rbfdot(sigma), vanilladot().
-For continuous data, "breaktie" can be set to FALSE for faster computation.
+\eqn{T_n} is an estimate of \eqn{E[E[k(Y_1,Y_1')|X]]}, with \eqn{Y_1}, \eqn{Y_1'} drawn iid from \eqn{Y|X}, given \eqn{X}.
+For Knn graph, ties will be broken at random. MST is found using package \code{emstreeR}.
 }
