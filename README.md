@@ -46,7 +46,7 @@ The inputs are `Y`, `Z`: matrices of n rows; `X`: a matrix of n rows, or NULL if
 measures the unconditional association between Y and Z. `ky`, `kx`, `kxz`: the kernels used for the space of Y, X, (X,Z) respectively;
 `eps`: a small positive regularization parameter for inverting the empirical cross-covariance operator;
 `appro`: whether to use incomplete Cholesky decomposition for approximation;
-`tol`: tolerance used for incomplete Cholesky decomposition (implemented in `inchol` in the package kernlab).
+`tol`: tolerance used for incomplete Cholesky decomposition (implemented in `inchol` in the package `kernlab`).
 
 ``` r
 library(kernlab)
