@@ -207,11 +207,60 @@ set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
 y = matrix(0,n,9)
 for (i in 1:n) {
-  y[i,] = R1(X[i,1])%*%R3(X[i,2])
+  y[i,] = as.numeric(R1(X[i,1])%*%R3(X[i,2]))
 }
 KFOCI(y, X, SO3ker, Knn=1, numCores = 1)
 # 2 1
 ```
+
+The 2017 Korea presidential election data, collected from https://github.com/OhmyNews/2017-Election,
+consists of the voting results earned by the top five candidates from 250 electoral districts in Korea.
+The top three candidates from three major parties representing progressivism, conservatism and centrism earned most of the votes,
+so we will focus on the proportion of votes earned by each of these three candidates among them (Y), which can be viewed as a histogram-valued response.
+The demographic information average age (X1), average years of education (X2), average housing price per square meter (X3) and average paid national health
+insurance premium (X4) are available for each electoral district.
+``` r
+data(ElecData)
+n = dim(ElecData)[1]/5
+Y = matrix(0, n, 3)
+# Each row of Y is the proportion of votes earned by each of the top three candidates among them
+for (i in 1:n) {
+  num_vote = ElecData$NumVote[(1+(i-1)*5):(3+(i-1)*5)]
+  Y[i,] = num_vote/sum(num_vote)
+}
+X = ElecData[5*(1:n),9:12]
+for (i in 1:4) X[,i] = (X[,i] - mean(X[,i]))/sd(X[,i]) # normalize the data
+
+library(kernlab)
+KFOCI(Y, X, rbfdot(1/(2*median(dist(Y)^2))), Knn=1, numCores = 1)
+# 1 2 3 4
+
+# define two kernels on histograms
+k1 = function(a,b) return(1/prod(a+b+1))
+k2 = function(a,b) return(exp(-sum(sqrt(a+b))))
+class(k1) = class(k2) = "kernel"
+
+KFOCI(Y, X, k1, Knn=3, numCores = 1)
+# 2 1 4 3
+KFOCI(Y, X, k2, Knn=5, numCores = 1)
+# 1 2 4
+
+KPCgraph(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y)^2))),Knn = 2,trans_inv=TRUE)
+# 0.1543532
+KPCCME(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y)^2))),rbfdot(1/(2*median(dist(X[,c(2,3,4)])^2))), rbfdot(1/(2*median(dist(X)^2))), eps=1e-4, appro=F)
+# 0.1473899
+KPCgraph(Y,X[,c(1,2,4)],X[,3],rbfdot(1/(2*median(dist(Y)^2))),Knn = 2,trans_inv=TRUE)
+# 0.05542749
+KPCCME(Y,X[,c(1,2,4)],X[,3],rbfdot(1/(2*median(dist(Y)^2))),rbfdot(1/(2*median(dist(X[,c(1,2,4)])^2))), rbfdot(1/(2*median(dist(X)^2))), eps=1e-4, appro=F)
+# 0.06338199
+# X3 and X4 are both measures of richness. The conditional association between X3 and Y given all other variables is weaker than that of X1 and Y.
+
+# Check MSE
+for (eps in 10^(-(1:9))) print(MSE(X,Y,rbfdot(1/(2*median(dist(X))^2)),rbfdot(1/(2*median(dist(Y))^2)),eps))
+# 0.580 0.605 0.575 0.606 0.692 2.253 32.855 339.731 731.645
+```
+
+
 
 
 
