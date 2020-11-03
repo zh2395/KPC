@@ -186,10 +186,31 @@ KPCgraph(y1,x,z,SO3ker,Knn = 1,trans_inv=T)
 KPCgraph(y2,x,z,SO3ker,Knn = 1,trans_inv=T)
 # 0.00914022
 # y1 is conditionally independent of z given x
-KPCCME(y1, x, z, SO3ker2, rbfdot(1), rbfdot(0.5), 1e-5, appro = F)
+
+for (eps in 10^(-(1:9))) print(MSE(x,y1,kernlab::rbfdot(1),SO3ker,eps))
+# 2.507 2.502 2.509 2.523 2.607 3.567 14.860 124.848 955.870
+for (eps in 10^(-(1:9))) print(MSE(cbind(x,z),y2,kernlab::rbfdot(1/2),SO3ker,eps))
+# 2.510 2.505 2.509 2.527 2.639 3.301 8.307 52.744 473.358
+# Similarly we can also examine MSE((x,z),y1) and MSE(x,y2)
+# Choose the smallest possible eps while controlling the MSE
+# Let eps = 1e-5
+
+KPCCME(y1, x, z, SO3ker, rbfdot(1), rbfdot(0.5), 1e-5, appro = F)
 # 0.6198004
-KPCCME(y2, x, z, SO3ker2, rbfdot(1), rbfdot(0.5), 1e-5, appro = F)
+KPCCME(y2, x, z, SO3ker, rbfdot(1), rbfdot(0.5), 1e-5, appro = F)
 # 0.05227157
+
+# Variable selection
+n = 100
+p = 500
+set.seed(1)
+X = matrix(rnorm(n * p), ncol = p)
+y = matrix(0,n,9)
+for (i in 1:n) {
+  y[i,] = R1(X[i,1])%*%R3(X[i,2])
+}
+KFOCI(y, X, SO3ker, Knn=1, numCores = 1)
+# 2 1
 ```
 
 
