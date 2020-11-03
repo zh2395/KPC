@@ -17,7 +17,7 @@ You can install the package KPC by:
 devtools::install_github("zh2395/KPC")
 ```
 
-## Basic usage of the functions
+## Usage of the functions
 
 `KPCgraph` implements the KPC estimator based on geometric graphs.
 The inputs are `Y`, `X`, `Z`: matrices of n rows; `k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g. `rbfdot(sigma = 1)`, `vanilladot()`;
