@@ -78,7 +78,7 @@ case it will be set equal to dx. If `stop == TRUE`, then `num_features` is then 
 `numCores` number of cores that are going to be used for parallelizing the process;
 `k` the kernel function used for Y;
 `Knn` the number of nearest neighbor, or "MST".
-It returns a vector of the indices from 1,...,dx of the selected variables.
+`KFOCI` returns a vector of the indices from 1,...,dx of the selected variables.
 
 ``` r
 n = 200
