@@ -142,7 +142,25 @@ CME_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
 # 1 2 3
 ```
 
-## KPC on general spaces
+`KPCCMElinear` is the CME estimator when `ky`, `kx`, `kxz` are all linear kernels,
+in which case the incomplete Cholesky decomposition is the data matrix itself and could speed up the computation to a great extent.
+It is included here for reproducing the results in the paper.
+``` r
+n = 2000
+set.seed(1)
+x = rnorm(n)
+z = rnorm(n)
+y = x + z + rnorm(n,1,1)
+KPCCMElinear(y, x, z, 1e-5/n^(0.4))
+# 0.4859424
+# Theoretical KPC is 0.5
+# compared with classical partial correlation squared:
+# ppcor::pcor.test(y, z, x)$estimate^2 
+# 0.4859428
+```
+
+
+## Case study on general spaces
 KPC can be defined on general spaces, and if the objects in the general spaces can be stored in vectors, then the above functions can also be used.
 Here we consider the special orthogonal group SO(3), which consists of 3 by 3 orthogonal matrices with determinant 1.
 We store the matrices by concatenating the columns, and define a kernel on the vectorized SO(3) by
