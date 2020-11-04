@@ -1,12 +1,13 @@
 # KPC
 Kernel partial correlation coefficient (KPC) measures the strength of conditional association between Y and Z given X,
-with X, Y, Z being random variables in general topological spaces.
+with X, Y, Z being random variables in topological spaces.
 The population KPC is a deterministic number between 0 and 1.
 It is 0 if and only if Y is conditionally independent of Z given X. It is 1 if and only if Y is a measurable function of Z and X.
 This R package provides implementations of two empirical versions of KPC when X, Y, Z can be stored in vectors.
 One is based on the geometric graph such as K-nearest neighbor graph (KNN) and minimum spanning tree (MST), and is consistent under very weak conditions.
 The other is based on the conditional mean embedding (CME) formula in the kernel literature, which is also consistent under suitable conditions.
-A stepwise forward variable selection algorithm KFOCI is also given, as well as a similar stepwise forward selection algorithm based on CME.
+Users are free to define arbitrary kernels.
+A stepwise forward variable selection algorithm KFOCI is given, as well as a similar stepwise forward selection algorithm based on CME.
 For more details on KPC, its empirical estimators and its application on variable selection, see (link to the paper).
 
 ## Installation
