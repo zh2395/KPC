@@ -110,6 +110,7 @@ The inputs are `X` a matrix of predictors (n by dx);
 ``` r
 n = 200
 p = 100
+set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)
 for (eps in 10^(-(1:9))) print(MSE(X[,1],Y,kernlab::rbfdot(1),kernlab::rbfdot(1),eps))
