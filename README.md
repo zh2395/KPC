@@ -18,6 +18,11 @@ You can install the package KPC by:
 devtools::install_github("zh2395/KPC")
 ```
 
+You can uninstall the package by:
+```r
+remove.packages("KPC")
+```
+
 ## Usage of the functions
 
 `KPCgraph` implements the KPC estimator based on geometric graphs.

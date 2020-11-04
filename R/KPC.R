@@ -466,7 +466,7 @@ MSE = function(X,Y,kx,ky,eps) {
 #' n = 200
 #' p = 100
 #' X = matrix(rnorm(n * p), ncol = p)
-#' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)
+#' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)*0.5
 #' kx = c(kernlab::rbfdot(1),kernlab::rbfdot(1/2),kernlab::rbfdot(1/3))
 #' CME_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
