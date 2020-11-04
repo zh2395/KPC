@@ -137,9 +137,9 @@ The algorithm returns a vector of the indices from \code{1,...,dx} of the select
 ``` r
 n = 200
 p = 100
-set.seed(2)
+set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
-Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)
+Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)*0.5
 kx = c(kernlab::rbfdot(1),kernlab::rbfdot(1/2),kernlab::rbfdot(1/3))
 CME_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
 # 1 2 3
