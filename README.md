@@ -26,6 +26,7 @@ The inputs are `Y`, `X`, `Z`: matrices of n rows; `k`: a function of class kerne
 
 ``` r
 library(kernlab)
+library(KPC)
 n = 1000
 set.seed(1)
 x = runif(n)
@@ -205,7 +206,7 @@ KPCgraph(y1,x,z,SO3ker,Knn = 1,trans_inv=T)
 # y1 is a function of x and z
 KPCgraph(y2,x,z,SO3ker,Knn = 1,trans_inv=T)
 # 0.00914022
-# y1 is conditionally independent of z given x
+# y2 is conditionally independent of z given x
 
 for (eps in 10^(-(1:9))) print(MSE(x,y1,kernlab::rbfdot(1),SO3ker,eps))
 # 2.507 2.502 2.509 2.523 2.607 3.567 14.860 124.848 955.870
