@@ -222,11 +222,12 @@ double_center = function(M){
 #' data("med")
 #' KPCCME(med$D,med$C,med$U,rbfdot(1/(2*median(dist(med$D))^2)),rbfdot(1/(2*median(dist(med$C))^2)), rbfdot(1/(2*median(dist(cbind(med$C,med$U)))^2)), 1e-3,F) # 0.0003175344 D is independent of U given C
 #' KPCCME(med$D,med$U,med$C,rbfdot(1/(2*median(dist(med$D))^2)),rbfdot(1/(2*median(dist(med$U))^2)), rbfdot(1/(2*median(dist(cbind(med$C,med$U)))^2)), 1e-3,F) # 0.6834605 D is associated with C controlling U
-#' n = 1000
+#' n = 2000
 #' x = runif(n)
 #' z = runif(n)
 #' y = (x + z) %% 1
 #' KPCCME(y, x, z, rbfdot(5), rbfdot(5), rbfdot(2), 1e-3/n^(0.49), appro = F)
+#' KPCCME(y, x, z, rbfdot(5), rbfdot(5), rbfdot(2), 1e-4/n^(0.4), appro = F)
 #' KPCCME(y, x, z, rbfdot(5), rbfdot(5), rbfdot(2), 1e-3/n^(0.49), appro = T, tol = 1e-5)
 KPCCME = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) {
   if(!is.matrix(Y)) Y = as.matrix(Y)
@@ -321,7 +322,7 @@ KPCCMElinear = function(Y, X = NULL, Z, eps) {
 
 
 
-#' Kernel Feature Ordering by Conditional Independence (KFOCI),
+#' Kernel Feature Ordering by Conditional Independence
 #'
 #' Variable selection with KPC using directed Knn graph or minimum spanning tree
 #'
@@ -335,6 +336,7 @@ KPCCMElinear = function(Y, X = NULL, Z, eps) {
 #' @param numCores number of cores that are going to be used for parallelizing the process.
 #' @param k a function \eqn{k(y, y')} of class \code{kernel} on the space of \eqn{Y}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}
 #' @param Knn the number of nearest neighbor; or "MST"
+#' @param verbose whether to print each selected variables during the forward stepwise algorithm
 #' @return a vector of the indices from 1,...,dx of the selected variables
 #' @examples
 #' n = 200
@@ -360,7 +362,7 @@ KPCCMElinear = function(Y, X = NULL, Z, eps) {
 #' KFOCI(Y, X, kernlab::rbfdot(1), Knn=20, numCores = 7)
 #' }
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-KFOCI <- function(Y, X, k, Knn, num_features = NULL, stop = TRUE, numCores = 1){
+KFOCI <- function(Y, X, k, Knn, num_features = NULL, stop = TRUE, numCores = 1, verbose = F){
   if(!is.matrix(X)) {
     X = as.matrix(X)
   }
@@ -385,6 +387,7 @@ KFOCI <- function(Y, X, k, Knn, num_features = NULL, stop = TRUE, numCores = 1){
   if (Q[1] <= 0 & stop == TRUE) return(0)
   index_max = min(which(seq_Q == Q[1]))
   index_select[1] = index_max
+  if (verbose) print(paste("Variable",index_max,"is selected"))
   count = 1
 
   # select rest of the variables
@@ -409,6 +412,7 @@ KFOCI <- function(Y, X, k, Knn, num_features = NULL, stop = TRUE, numCores = 1){
     if (Q[count + 1] <= Q[count] & stop == TRUE) break
     index_select[count + 1] = index_left[index_max]
     count = count + 1
+    if (verbose) print(paste("Variable",index_select[count],"is selected"))
   }
 
   return(index_select[1:count])
@@ -439,10 +443,8 @@ MSE = function(X,Y,kx,ky,eps) {
   if(!is.matrix(X)) X = as.matrix(X)
   if(!is.matrix(Y)) Y = as.matrix(Y)
   n = dim(X)[1]
-  Kx = kernelMatrix(kx,X)
-  A = solve(double_center(Kx) + n*eps*diag(n))%*%(- matrix(rowMeans(Kx),n,n,byrow = F) + mean(Kx) + eps)
-  Ky = kernelMatrix(ky,Y)
-  return(sum(Ky * base::tcrossprod(A))/n)
+  A = solve(double_center(kernelMatrix(kx,X)) + n*eps*diag(n))
+  return(sum(double_center(kernelMatrix(ky,Y)) * base::tcrossprod(A))*n*eps^2)
 }
 
 
@@ -461,6 +463,7 @@ MSE = function(X,Y,kx,ky,eps) {
 #' @param eps a positive number; the regularization parameter for CME estimator
 #' @param appro whether to use incomplete Cholesky decomposition for approximation
 #' @param tol tolerance used for incomplete Cholesky decomposition (\code{inchol} in package \code{kernlab})
+#' @param verbose whether to print each selected variables during the forward stepwise algorithm
 #' @return a vector of the indices from \code{1,...,dx} of the selected variables
 #' @examples
 #' n = 200
@@ -470,7 +473,7 @@ MSE = function(X,Y,kx,ky,eps) {
 #' kx = c(kernlab::rbfdot(1),kernlab::rbfdot(1/2),kernlab::rbfdot(1/3))
 #' CME_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-CME_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, numCores = 1){
+CME_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, numCores = 1, verbose = F){
   if(!is.matrix(X)) X = as.matrix(X)
   if(!is.matrix(Y)) Y = as.matrix(Y)
 
@@ -489,6 +492,7 @@ CME_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, n
   Q[1] = max(seq_Q)
   index_max = min(which(seq_Q == Q[1]))
   index_select[1] = index_max
+  if (verbose) print(paste("Variable",index_max,"is selected"))
   count = 1
 
   # select rest of the variables
@@ -512,6 +516,7 @@ CME_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, n
     index_max = min(which(seq_Q == Q[count + 1]))
     index_select[count + 1] = index_left[index_max]
     count = count + 1
+    if (verbose) print(paste("Variable",index_select[count],"is selected"))
   }
 
   return(index_select[1:count])

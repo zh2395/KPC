@@ -3,8 +3,8 @@ Kernel partial correlation coefficient (KPC) measures the strength of conditiona
 with X, Y, Z being random variables in topological spaces.
 The population KPC is a deterministic number between 0 and 1.
 It is 0 if and only if Y is conditionally independent of Z given X. It is 1 if and only if Y is a measurable function of Z and X.
-This R package provides implementations of two empirical versions of KPC when X, Y, Z can be stored in vectors.
-One is based on the geometric graph such as K-nearest neighbor graph (KNN) and minimum spanning tree (MST), and is consistent under very weak conditions.
+This R package provides implementations of two empirical versions of KPC when X, Z are Euclidean, and Y possibly taking values in general spaces can be stored as vectors.
+One empirical KPC is based on the geometric graph such as K-nearest neighbor graph (KNN) and minimum spanning tree (MST), and is consistent under very weak conditions.
 The other is based on the conditional mean embedding (CME) formula in the kernel literature, which is also consistent under suitable conditions.
 Users are free to define arbitrary kernels.
 A stepwise forward variable selection algorithm KFOCI is given, as well as a similar stepwise forward selection algorithm based on CME.
@@ -24,6 +24,8 @@ remove.packages("KPC")
 ```
 
 ## Usage of the functions
+Here we briefly introduce the functions in this package.
+See the documentation for more details.
 
 `KPCgraph` implements the KPC estimator based on geometric graphs.
 The inputs are `Y`, `X`, `Z`: matrices of n rows; `k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g. `rbfdot(sigma = 1)`, `vanilladot()`;
@@ -104,28 +106,6 @@ colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],kernlab::rbfdot(1/(2*median
 # "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 ```
 
-
-`MSE` returns the mean squared error between k(Y_i,) and the empirical CME \hat{\mu}_{Y|Xi}.
-It provides a way to select the regularization parameter `eps` in the CME estimator.
-`eps` should be chosen as small as possible while keeping the MSE reasonably small.
-The inputs are `X` a matrix of predictors (n by dx);
-`Y` a matrix of responses (n by dy);
-`ky` the kernel function for Y;
-`kx` the kernel function for X;
-`eps` the regularization parameter for the CME estimator.
-``` r
-n = 200
-p = 100
-set.seed(1)
-X = matrix(rnorm(n * p), ncol = p)
-Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)
-for (eps in 10^(-(1:9))) print(MSE(X[,1],Y,kernlab::rbfdot(1),kernlab::rbfdot(1),eps))
-# 0.313 0.285 0.290 0.340 0.637 4.258 135.981 1730.174 11931.17
-for (eps in 10^(-(1:9))) print(MSE(X[,1:2],Y,kernlab::rbfdot(1/2),kernlab::rbfdot(1),eps))
-# 0.307 0.245 0.216 0.348 1.388 7.630 57.920 472.576 2061.338
-for (eps in 10^(-(1:9))) print(MSE(X[,1:3],Y,kernlab::rbfdot(1/3),kernlab::rbfdot(1),eps))
-# 0.305 0.254 0.251 0.276 0.540 6.499 55.720 321.408 694.576
-```
 
 `CME_select` performs a forward stepwise variable selection using CME estimators.
 One needs to pre-specify the number of variables to be selected.
@@ -213,14 +193,6 @@ KPCgraph(y2,x,z,SO3ker,Knn = 1,trans_inv=T)
 # 0.00914022
 # y2 is conditionally independent of z given x
 
-for (eps in 10^(-(1:9))) print(MSE(x,y1,kernlab::rbfdot(1),SO3ker,eps))
-# 2.507 2.502 2.509 2.523 2.607 3.567 14.860 124.848 955.870
-for (eps in 10^(-(1:9))) print(MSE(cbind(x,z),y2,kernlab::rbfdot(1/2),SO3ker,eps))
-# 2.510 2.505 2.509 2.527 2.639 3.301 8.307 52.744 473.358
-# Similarly we can also examine MSE((x,z),y1) and MSE(x,y2)
-# Choose the smallest possible eps while controlling the MSE
-# Let eps = 1e-5
-
 KPCCME(y1, x, z, SO3ker, rbfdot(1), rbfdot(0.5), 1e-5, appro = F)
 # 0.6198004
 KPCCME(y2, x, z, SO3ker, rbfdot(1), rbfdot(0.5), 1e-5, appro = F)
@@ -275,15 +247,12 @@ KPCgraph(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y)^2))),Knn = 2,trans_inv=
 # 0.1543532
 KPCCME(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y)^2))),rbfdot(1/(2*median(dist(X[,c(2,3,4)])^2))), rbfdot(1/(2*median(dist(X)^2))), eps=1e-4, appro=F)
 # 0.1473899
+
 KPCgraph(Y,X[,c(1,2,4)],X[,3],rbfdot(1/(2*median(dist(Y)^2))),Knn = 2,trans_inv=TRUE)
 # 0.05542749
 KPCCME(Y,X[,c(1,2,4)],X[,3],rbfdot(1/(2*median(dist(Y)^2))),rbfdot(1/(2*median(dist(X[,c(1,2,4)])^2))), rbfdot(1/(2*median(dist(X)^2))), eps=1e-4, appro=F)
 # 0.06338199
 # X3 and X4 are both measures of richness. The conditional association between X3 and Y given all other variables is weaker than that of X1 and Y.
-
-# Check MSE
-for (eps in 10^(-(1:9))) print(MSE(X,Y,rbfdot(1/(2*median(dist(X))^2)),rbfdot(1/(2*median(dist(Y))^2)),eps))
-# 0.580 0.605 0.575 0.606 0.692 2.253 32.855 339.731 731.645
 ```
 
 
