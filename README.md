@@ -55,7 +55,7 @@ x = rnorm(n)
 z = rnorm(n)
 y = x + z + rnorm(n,1,1)
 library(kernlab)
-k = vanilladot()
+k = vanilladot() # linear kernel
 KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = F)
 # 0.4859424 (Population quantity = 0.5)
 KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = T, tol = 1e-5)
@@ -85,7 +85,7 @@ Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
 # 1 2 3
 
-# Install package `olsrr'
+# Install package 'olsrr'
 surgical = olsrr::surgical
 for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
 colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],kernlab::rbfdot(1/(2*median(dist(surgical$y))^2)),Knn=1)]
