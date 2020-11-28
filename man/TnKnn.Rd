@@ -11,7 +11,7 @@ TnKnn(Y, X, k, Knn = 1)
 
 \item{X}{a matrix of predictors (n by dx)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
 
 \item{Knn}{the number of K-nearest neighbor to use; or "MST".}
 }
@@ -23,5 +23,5 @@ Calculate \eqn{T_n} using directed Knn graph or minimum spanning tree (MST).
 }
 \details{
 \eqn{T_n} is an estimate of \eqn{E[E[k(Y_1,Y_1')|X]]}, with \eqn{Y_1}, \eqn{Y_1'} drawn iid from \eqn{Y|X}, given \eqn{X}.
-For Knn graph, ties will be broken at random. MST is found using package \code{emstreeR}.
+For Knn graph, ties will be broken at random. Algorithm finding the MST is implemented the package \code{emstreeR}.
 }

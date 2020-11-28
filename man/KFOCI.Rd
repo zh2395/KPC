@@ -2,31 +2,42 @@
 % Please edit documentation in R/KPC.R
 \name{KFOCI}
 \alias{KFOCI}
-\title{Kernel Feature Ordering by Conditional Independence (KFOCI),}
+\title{Kernel Feature Ordering by Conditional Independence}
 \usage{
-KFOCI(Y, X, k, Knn, num_features = NULL, stop = TRUE, numCores = 1)
+KFOCI(
+  Y,
+  X,
+  k,
+  Knn = 1,
+  num_features = NULL,
+  stop = TRUE,
+  numCores = 1,
+  verbose = F
+)
 }
 \arguments{
 \item{Y}{a matrix of responses (n by dy)}
 
 \item{X}{a matrix of predictors (n by dx)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel} on the space of \eqn{Y}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
 
 \item{Knn}{the number of nearest neighbor; or "MST"}
 
 \item{num_features}{the number of variables to be selected, cannot be larger than dx. The default value is NULL and in that
 case it will be set equal to dx. If stop == TRUE (see below), then num_features is the maximal number of variables to be selected.}
 
-\item{stop}{Stops at the first instance of negative Tn, if TRUE.}
+\item{stop}{If `stop == TRUE`, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till `num_features` many variables are selected. If `stop == FALSE` then exactly `num_features` many variables are selected.}
 
 \item{numCores}{number of cores that are going to be used for parallelizing the process.}
+
+\item{verbose}{whether to print each selected variables during the forward stepwise algorithm}
 }
 \value{
 a vector of the indices from 1,...,dx of the selected variables
 }
 \description{
-Variable selection with KPC using directed Knn graph or minimum spanning tree
+Variable selection with KPC using directed Knn graph or minimum spanning tree (MST)
 }
 \details{
 A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\hat{rho^2}(Y,Xj | selected Xi)} is selected.
@@ -37,21 +48,20 @@ p = 100
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
-KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, num_features = 2, numCores = 1)
-colnames(X) = paste0(rep("X", p), seq(1, p))
-FOCI::foci(Y, X, numCores = 1)$selectedVar$index
 
+# install the package olsrr first
 surgical = olsrr::surgical
 for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
 colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],kernlab::rbfdot(1/(2*median(dist(surgical$y))^2)),Knn=1)]
 #### "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 \dontrun{
-# This example is computationally consuming. It may take 20 mins with 7 cores on a laptop.
+# This example may take several minutes on a personal computer.
 n = 2000
 p = 1000
 set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
-Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)
-KFOCI(Y, X, kernlab::rbfdot(1), Knn=20, numCores = 7)
+Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
+KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 7)
+# 1 2 3
 }
 }

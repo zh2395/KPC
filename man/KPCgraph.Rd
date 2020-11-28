@@ -13,28 +13,24 @@ KPCgraph(Y, X, Z, k, Knn = 1, trans_inv = FALSE)
 
 \item{Z}{a matrix (n by dz)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
 
 \item{Knn}{number of nearest neighbor to use; or "MST"}
 
 \item{trans_inv}{TRUE or FALSE. Is \eqn{k(y, y)} free of \eqn{y}?}
 }
 \description{
-Calculate the kernel partial correlation coefficient (KPC) with directed Knn graph or minimum spanning tree.
+Calculate the kernel partial correlation (KPC) coefficient with directed Knn (nearest neighbor) graph or minimum spanning tree (MST).
 }
 \details{
 The kernel partial correlation squared (KPC) measures the conditional dependency
 between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
 It converges to the population quantity which is between 0 and 1.
 A small value indicates low conditional dependency between \eqn{Y} and \eqn{Z} given \eqn{X}, and
-a high value indicates stronger conditional dependence.
+a large value indicates stronger conditional dependence.
 }
 \examples{
 library(kernlab)
-data("med")
-KPCgraph(med$D,med$C,med$U,rbfdot(1/(2*median(dist(med$D))^2)),trans_inv=T)
-
-
 n = 2000
 x = rnorm(n)
 z = rnorm(n)
@@ -42,9 +38,8 @@ y = x + z + rnorm(n,1,1)
 KPCgraph(y,x,z,vanilladot(),Knn=1,trans_inv=F)
 
 n = 1000
-set.seed(1)
 x = runif(n)
 z = runif(n)
 y = (x + z) \%\% 1
-KPCgraph(y,x,z,rbfdot(5),Knn=1,trans_inv=T)
+KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=T)
 }
