@@ -366,7 +366,6 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
   if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
   if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
 
-  if (is.null(num_features)) num_features = dim(X)[2]
   n = dim(Y)[1]
   p = ncol(X)
   Q = rep(0, num_features) # stores the values of Tn
