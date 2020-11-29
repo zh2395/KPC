@@ -11,10 +11,11 @@
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
 #' @return Tn: a numeric number
 TnKnn = function(Y,X,k,Knn=1) {
-  if (Knn == "MST") return(TnMST(Y,X,k))
-
   if(!is.matrix(Y)) Y = as.matrix(Y)
+  if(!is.matrix(X)) X = as.matrix(X)
+  if((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
 
+  if (Knn == "MST") return(TnMST(Y,X,k))
   n = dim(Y)[1]
 
   # row i is the indices of KNN for Xi
@@ -38,7 +39,7 @@ TnKnn = function(Y,X,k,Knn=1) {
 get_neighbors = function(X,Knn) {
   if (!is.matrix(X)) X = as.matrix(X)
   # compute the nearest neighbor of X
-  # need Knn + 1 <= dx
+  if (Knn + 2 > nrow(X)) stop("n should be greater than Knn + 1")
   nn_X = RANN::nn2(X, query = X, k = Knn + 2)
   nn_index_X = nn_X$nn.idx[, 2:(Knn+1), drop=F]
 
@@ -322,6 +323,7 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' Variable selection with KPC using directed Knn graph or minimum spanning tree (MST)
 #'
 #' A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\hat{rho^2}(Y,Xj | selected Xi)} is selected.
+#' It is suggested to normalize the predictors before applying KFOCI.
 #'
 #' @param Y a matrix of responses (n by dy)
 #' @param X a matrix of predictors (n by dx)
@@ -352,17 +354,20 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' set.seed(1)
 #' X = matrix(rnorm(n * p), ncol = p)
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 7)
+#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1)
 #' # 1 2 3
 #' }
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores = 1, verbose = F){
+KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores = parallel::detectCores(), verbose = F){
   if(!is.matrix(X)) {
     X = as.matrix(X)
   }
   if(!is.matrix(Y)) {
     Y = as.matrix(Y)
   }
+  if((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
+  if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
+  if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
 
   if (is.null(num_features)) num_features = dim(X)[2]
   n = dim(Y)[1]
@@ -438,9 +443,12 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
 #' kx = c(rbfdot(1),rbfdot(1/2),rbfdot(1/3))
 #' RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, numCores = 1, verbose = F){
+RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, numCores = parallel::detectCores(), verbose = F){
   if(!is.matrix(X)) X = as.matrix(X)
   if(!is.matrix(Y)) Y = as.matrix(Y)
+  if((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
+  if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
+  if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
 
   n = dim(Y)[1]
   p = ncol(X)
@@ -550,6 +558,8 @@ KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, to
 #' Kmac(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
 Kmac = function(Y,X,k,Knn=1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
+  if(!is.matrix(X)) X = as.matrix(X)
+  if((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
   kernelm = kernelMatrix(k,Y)
   dirsum=sum(diag(kernelm))
   crosssum=sum(kernelMatrix(k,Y))-dirsum
@@ -579,6 +589,8 @@ Kmac = function(Y,X,k,Knn=1) {
 #' Klin(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
 Klin = function(Y,X,k,Knn=1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
+  if(!is.matrix(X)) X = as.matrix(X)
+  if((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
   n = dim(Y)[1]
   kernelm = kernelMatrix(k,Y)
 

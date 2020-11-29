@@ -74,7 +74,7 @@ case it will be set equal to dx.
 `numCores`: number of cores that are going to be used for parallelizing the process.
 `verbose`: whether to print each selected variables during the forward stepwise algorithm (default `FALSE`).
 
-`KFOCI` returns a vector of the indices, from 1,...,dx, of the selected variables.
+It is suggested to normalize the predictors before applying `KFOCI`. `KFOCI` returns a vector of the indices, from 1,...,dx, of the selected variables.
 
 ``` r
 n = 200

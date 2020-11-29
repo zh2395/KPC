@@ -13,7 +13,7 @@ RKHS_select(
   eps,
   appro = F,
   tol = 0.001,
-  numCores = 1,
+  numCores = parallel::detectCores(),
   verbose = F
 )
 }

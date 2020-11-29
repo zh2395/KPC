@@ -11,7 +11,7 @@ KFOCI(
   Knn = 1,
   num_features = NULL,
   stop = TRUE,
-  numCores = 1,
+  numCores = parallel::detectCores(),
   verbose = F
 )
 }
@@ -41,6 +41,7 @@ Variable selection with KPC using directed Knn graph or minimum spanning tree (M
 }
 \details{
 A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\hat{rho^2}(Y,Xj | selected Xi)} is selected.
+It is suggested to normalize the predictors before applying KFOCI.
 }
 \examples{
 n = 200
@@ -61,7 +62,7 @@ p = 1000
 set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 7)
+KFOCI(Y, X, kernlab::rbfdot(1), Knn=1)
 # 1 2 3
 }
 }
