@@ -359,13 +359,10 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' }
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
 KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores = parallel::detectCores(), verbose = F){
-  if (!is.matrix(X)) {
-    X = as.matrix(X)
-  }
-  if (!is.matrix(Y)) {
-    Y = as.matrix(Y)
-  }
+  if (!is.matrix(X)) X = as.matrix(X)
+  if (!is.matrix(Y)) Y = as.matrix(Y)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
+  if (is.null(num_features)) num_features <- dim(X)[2]
   if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
   if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
 
@@ -447,6 +444,7 @@ RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, 
   if (!is.matrix(X)) X = as.matrix(X)
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
+  if (is.null(num_features)) num_features <- dim(X)[2]
   if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
   if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
 
