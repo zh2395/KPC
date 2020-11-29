@@ -11,9 +11,9 @@
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
 #' @return Tn: a numeric number
 TnKnn = function(Y,X,k,Knn=1) {
-  if(!is.matrix(Y)) Y = as.matrix(Y)
-  if(!is.matrix(X)) X = as.matrix(X)
-  if((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
+  if (!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.matrix(X)) X = as.matrix(X)
+  if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
 
   if (Knn == "MST") return(TnMST(Y,X,k))
   n = dim(Y)[1]
@@ -102,8 +102,8 @@ get_neighbors = function(X,Knn) {
 
 # Calculate Tn using minimum spanning tree (MST).
 TnMST = function(Y,X,k) {
-  if(!is.data.frame(X)) X = as.data.frame(X)
-  if(!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.data.frame(X)) X = as.data.frame(X)
+  if (!is.matrix(Y)) Y = as.matrix(Y)
 
   n = dim(Y)[1]
 
@@ -164,7 +164,7 @@ TnMST = function(Y,X,k) {
 #' y = (x + z) %% 1
 #' KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=T)
 KPCgraph = function(Y,X,Z,k,Knn = 1,trans_inv=FALSE) {
-  if(!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.matrix(Y)) Y = as.matrix(Y)
 
   Tn_XZ = TnKnn(Y,cbind(X,Z),k,Knn)
   Tn_X = TnKnn(Y,X,k,Knn)
@@ -226,9 +226,9 @@ double_center = function(M){
 #' KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = T, tol = 1e-5)
 #' # 0.4859424 (Population quantity = 0.5)
 KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) {
-  if(!is.matrix(Y)) Y = as.matrix(Y)
-  if(!is.matrix(Z)) Z = as.matrix(Z)
-  if(!is.null(X) & !is.matrix(X)) X = as.matrix(X)
+  if (!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.matrix(Z)) Z = as.matrix(Z)
+  if (!is.null(X) & !is.matrix(X)) X = as.matrix(X)
 
   n = dim(Y)[1]
   if (!appro) {
@@ -290,9 +290,9 @@ KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) 
 #' y = x + z + rnorm(n,1,1)
 #' KPCRKHSlinear(y, x, z, 1e-5/n^(0.4))
 KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
-  if(!is.matrix(Y)) Y = as.matrix(Y)
-  if(!is.matrix(Z)) Z = as.matrix(Z)
-  if(!is.null(X) & !is.matrix(X)) X = as.matrix(X)
+  if (!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.matrix(Z)) Z = as.matrix(Z)
+  if (!is.null(X) & !is.matrix(X)) X = as.matrix(X)
 
   n = dim(Y)[1]
 
@@ -359,13 +359,13 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' }
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
 KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores = parallel::detectCores(), verbose = F){
-  if(!is.matrix(X)) {
+  if (!is.matrix(X)) {
     X = as.matrix(X)
   }
-  if(!is.matrix(Y)) {
+  if (!is.matrix(Y)) {
     Y = as.matrix(Y)
   }
-  if((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
+  if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
   if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
   if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
 
@@ -444,9 +444,9 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
 #' RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
 RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, numCores = parallel::detectCores(), verbose = F){
-  if(!is.matrix(X)) X = as.matrix(X)
-  if(!is.matrix(Y)) Y = as.matrix(Y)
-  if((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
+  if (!is.matrix(X)) X = as.matrix(X)
+  if (!is.matrix(Y)) Y = as.matrix(Y)
+  if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
   if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
   if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
 
@@ -499,9 +499,9 @@ RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, 
 # calculate the numerator of the RKHS estimator
 # used for stepwise variable selection
 KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) {
-  if(!is.matrix(Y)) Y = as.matrix(Y)
-  if(!is.matrix(Z)) Z = as.matrix(Z)
-  if(!is.null(X) & !is.matrix(X)) X = as.matrix(X)
+  if (!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.matrix(Z)) Z = as.matrix(Z)
+  if (!is.null(X) & !is.matrix(X)) X = as.matrix(X)
 
   n = dim(Y)[1]
   if (!appro) {
@@ -558,8 +558,8 @@ KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, to
 #' Kmac(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
 Kmac = function(Y,X,k,Knn=1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
-  if(!is.matrix(X)) X = as.matrix(X)
-  if((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
+  if (!is.matrix(X)) X = as.matrix(X)
+  if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
   kernelm = kernelMatrix(k,Y)
   dirsum=sum(diag(kernelm))
   crosssum=sum(kernelMatrix(k,Y))-dirsum
@@ -589,8 +589,8 @@ Kmac = function(Y,X,k,Knn=1) {
 #' Klin(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
 Klin = function(Y,X,k,Knn=1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
-  if(!is.matrix(X)) X = as.matrix(X)
-  if((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
+  if (!is.matrix(X)) X = as.matrix(X)
+  if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
   n = dim(Y)[1]
   kernelm = kernelMatrix(k,Y)
 
