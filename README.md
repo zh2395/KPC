@@ -244,7 +244,7 @@ for (i in 1:n) {
   num_vote = ElecData$NumVote[(1+(i-1)*5):(3+(i-1)*5)]
   Y[i,] = num_vote/sum(num_vote)
 }
-X = ElecData[5*(1:n),9:12]
+X = ElecData[5*(1:n),4:7]
 for (i in 1:4) X[,i] = (X[,i] - mean(X[,i]))/sd(X[,i]) # normalize the data
 
 library(kernlab)
