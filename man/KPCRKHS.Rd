@@ -37,7 +37,7 @@ a large value indicates stronger conditional dependence.
 If \code{X = NULL}, it measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 }
 \examples{
-n = 2000
+n = 500
 set.seed(1)
 x = rnorm(n)
 z = rnorm(n)
@@ -45,7 +45,7 @@ y = x + z + rnorm(n,1,1)
 library(kernlab)
 k = vanilladot()
 KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = FALSE)
-# 0.4859424 (Population quantity = 0.5)
+# 0.4855134 (Population quantity = 0.5)
 KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = TRUE, tol = 1e-5)
-# 0.4859424 (Population quantity = 0.5)
+# 0.4855134 (Population quantity = 0.5)
 }

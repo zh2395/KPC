@@ -40,7 +40,7 @@ a vector of the indices from 1,...,dx of the selected variables
 Variable selection with KPC using directed Knn graph or minimum spanning tree (MST)
 }
 \details{
-A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\hat{rho^2}(Y,Xj | selected Xi)} is selected.
+A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\hat{\rho^2}(Y,X_j | selected X_i)} is selected.
 It is suggested to normalize the predictors before applying KFOCI.
 }
 \examples{

@@ -45,13 +45,13 @@ a vector of the indices from \code{1,...,dx} of the selected variables
 The algorithm performs a forward stepwise variable selection using RKHS estimators.
 }
 \details{
-A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\tilde{rho^2}(Y,Xj | selected Xi)} is selected.
+A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\tilde{\rho^2}(Y,X_j | selected X_i)} is selected.
 }
 \examples{
 n = 200
-p = 100
+p = 10
 X = matrix(rnorm(n * p), ncol = p)
-Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)*0.5
+Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 library(kernlab)
 kx = c(rbfdot(1),rbfdot(1/2),rbfdot(1/3))
 RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = FALSE, numCores = 1)
