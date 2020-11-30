@@ -44,3 +44,6 @@ z = runif(n)
 y = (x + z) \%\% 1
 KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=TRUE)
 }
+\seealso{
+\code{\link{Kmac}}, \code{\link{Klin}}
+}

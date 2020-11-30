@@ -9,6 +9,7 @@
 #' @param Y a matrix of response (n by dy)
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
+#' @export
 #' @return Tn: a numeric number
 TnKnn = function(Y,X,k,Knn=1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
@@ -44,6 +45,7 @@ get_neighbors = function(X,Knn) {
   # find all data points that are not unique
   repeat_data = which(nn_X$nn.dists[, 2] == 0)
   if (length(repeat_data) > 0) {
+    gp_size = id = NULL
     df_X = data.table::data.table(id = repeat_data, group = nn_X$nn.idx[repeat_data, 1])
     df_X[, gp_size := length(id), by = "group"]
 
@@ -149,6 +151,11 @@ TnMST = function(Y,X,k) {
 #' @param Knn number of nearest neighbor to use; or "MST"
 #' @param trans_inv TRUE or FALSE. Is \eqn{k(y, y)} free of \eqn{y}?
 #'
+#' @import data.table
+#' @export
+#'
+#' @seealso \code{\link{Kmac}}, \code{\link{Klin}}
+#'
 #' @examples
 #' library(kernlab)
 #' n = 2000
@@ -180,11 +187,11 @@ KPCgraph = function(Y,X,Z,k,Knn = 1,trans_inv=FALSE) {
     return((Tn_XZ - Tn_X)/(k(Y[1,],Y[1,])-Tn_X))
   }
   else {
-    d = function(j) {
+    node_calculator = function(j) {
       return(k(Y[j,],Y[j,]))
     }
 
-    return((Tn_XZ - Tn_X)/(mean(sapply(1:n, d))-Tn_X))
+    return((Tn_XZ - Tn_X)/(mean(sapply(1:nrow(Y), node_calculator))-Tn_X))
   }
 }
 
@@ -219,7 +226,8 @@ double_center = function(M){
 #' @param eps a small positive regularization parameter for inverting the empirical cross-covariance operator
 #' @param appro whether to use incomplete Cholesky decomposition for approximation
 #' @param tol tolerance used for incomplete Cholesky decomposition (implemented by the function \code{inchol} in the package \code{kernlab})
-#'
+#' @import kernlab
+#' @export
 #' @examples
 #' n = 2000
 #' set.seed(1)
@@ -295,6 +303,7 @@ KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) 
 #' @param Z a matrix (n by dz)
 #' @param X a matrix (n by dx) or \code{NULL} if \eqn{X} is empty
 #' @param eps a small regularization parameter for inverting the empirical cross-covariance operator
+#' @export
 #' @examples
 #' n = 2000
 #' x = rnorm(n)
@@ -353,6 +362,7 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' @param stop If `stop == TRUE`, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till `num_features` many variables are selected. If `stop == FALSE` then exactly `num_features` many variables are selected.
 #' @param numCores number of cores that are going to be used for parallelizing the process.
 #' @param verbose whether to print each selected variables during the forward stepwise algorithm
+#' @export
 #' @return a vector of the indices from 1,...,dx of the selected variables
 #' @examples
 #' n = 200
@@ -362,10 +372,10 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
 #'
 #' ### install the package olsrr first
-#' # surgical = olsrr::surgical
-#' # for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
-#' # ky = kernlab::rbfdot(1/(2*median(dist(surgical$y))^2))
-#' # colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],ky,Knn=1)]
+#' #surgical = olsrr::surgical
+#' #for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
+#' #ky = kernlab::rbfdot(1/(2*median(dist(surgical$y))^2))
+#' #colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],ky,Knn=1)]
 #' #### "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 #' \dontrun{
 #' # This example may take several minutes on a personal computer.
@@ -453,6 +463,7 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
 #' @param numCores number of cores that are going to be used for parallelizing the process.
 #' @param verbose whether to print each selected variables during the forward stepwise algorithm
 #' @return a vector of the indices from \code{1,...,dx} of the selected variables
+#' @export
 #' @examples
 #' n = 200
 #' p = 100
@@ -572,6 +583,7 @@ KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, to
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
 #' @return kmac: the empirical kernel measure of association
+#' @export
 #' @references Deb, N., P. Ghosal, and B. Sen (2020). Measuring association on topological spaces using kernels and geometric graphs
 #' @examples
 #' library(kernlab)
@@ -607,6 +619,7 @@ Kmac = function(Y,X,k,Knn=1) {
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
 #' @return klin: an empirical kernel measure of association which can be computed in near linear time when Knn graphs are used.
+#' @export
 #' @references Deb, N., P. Ghosal, and B. Sen (2020). Measuring association on topological spaces using kernels and geometric graphs
 #' @examples
 #' library(kernlab)
