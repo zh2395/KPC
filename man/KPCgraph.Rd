@@ -9,7 +9,7 @@ KPCgraph(Y, X, Z, k, Knn = 1, trans_inv = FALSE)
 \arguments{
 \item{Y}{a matrix (n by dy)}
 
-\item{X}{a matrix (n by dx)}
+\item{X}{a matrix (n by dx) or \code{NULL} if \eqn{X} is empty}
 
 \item{Z}{a matrix (n by dz)}
 
@@ -23,11 +23,12 @@ KPCgraph(Y, X, Z, k, Knn = 1, trans_inv = FALSE)
 Calculate the kernel partial correlation (KPC) coefficient with directed Knn (nearest neighbor) graph or minimum spanning tree (MST).
 }
 \details{
-The kernel partial correlation squared (KPC) measures the conditional dependency
+The kernel partial correlation squared (KPC) measures the conditional dependence
 between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
 It converges to the population quantity which is between 0 and 1.
-A small value indicates low conditional dependency between \eqn{Y} and \eqn{Z} given \eqn{X}, and
+A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 a large value indicates stronger conditional dependence.
+If \code{X = NULL}, it returns the \code{Kmac(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 }
 \examples{
 library(kernlab)

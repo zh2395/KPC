@@ -5,7 +5,7 @@ One empirical KPC estimator is based on geometric graphs, such as K-nearest neig
 
 Using KPC we also provide a stepwise forward variable selection algorithm KFOCI (using the graph based estimator of KPC), as well as a similar stepwise forward selection algorithm based on the RKHS based estimator. For more details on KPC, its empirical estimators and its application on variable selection, see (link to the paper).
 
-The package also provides an unconditional version of KPC, which is named Kmac, as described in *Deb, N., P. Ghosal, and B. Sen (2020). Measuring association on topological spaces using kernels and geometric graphs*. It is implemented in the function `Kmac` and `Klin`. The latter can be computed in near linear time. 
+When X is empty, KPC measures the unconditional dependence between Y and Z, which is also implemented in the package. The unconditional graph-based estimator has been described in *Deb, N., P. Ghosal, and B. Sen (2020). Measuring association on topological spaces using kernels and geometric graphs*. It is implemented in the functions `Kmac` and `Klin` in this package. The latter can be computed in near linear time. 
 
 ## Installation
 
@@ -25,7 +25,12 @@ Here we briefly introduce the functions in this package.
 See the documentation (help page) of the R package for more details.
 
 `KPCgraph` implements the KPC estimator based on geometric graphs.
-The inputs are `Y`, `X`, `Z`: matrices of n rows; `k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g. Gaussian kernel `rbfdot(sigma = 1)`, linear kernel `vanilladot()`;
+The inputs are:
+`Y`: a matrix of n rows;
+`X`: a matrix of n rows, or NULL if X is empty, in which case it will return `Kmac(Y,Z,k,Knn)`, which measures the unconditional dependence between Y and Z.the coefficient
+measures the unconditional association between Y and Z;
+`Z`: a matrix of n rows;
+`k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g. Gaussian kernel `rbfdot(sigma = 1)`, linear kernel `vanilladot()`;
 `Knn`: the number of nearest neighbors to use, or "MST"; `trans_inv`: whether k(y, y) is free of y.
 
 ``` r

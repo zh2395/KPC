@@ -13,7 +13,6 @@
 TnKnn = function(Y,X,k,Knn=1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if (!is.matrix(X)) X = as.matrix(X)
-  if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
 
   if (Knn == "MST") return(TnMST(Y,X,k))
   n = dim(Y)[1]
@@ -39,7 +38,6 @@ TnKnn = function(Y,X,k,Knn=1) {
 get_neighbors = function(X,Knn) {
   if (!is.matrix(X)) X = as.matrix(X)
   # compute the nearest neighbor of X
-  if (Knn + 2 > nrow(X)) stop("n should be greater than Knn + 1")
   nn_X = RANN::nn2(X, query = X, k = Knn + 2)
   nn_index_X = nn_X$nn.idx[, 2:(Knn+1), drop=F]
 
@@ -137,14 +135,15 @@ TnMST = function(Y,X,k) {
 #'
 #' Calculate the kernel partial correlation (KPC) coefficient with directed Knn (nearest neighbor) graph or minimum spanning tree (MST).
 #'
-#' The kernel partial correlation squared (KPC) measures the conditional dependency
+#' The kernel partial correlation squared (KPC) measures the conditional dependence
 #' between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
 #' It converges to the population quantity which is between 0 and 1.
-#' A small value indicates low conditional dependency between \eqn{Y} and \eqn{Z} given \eqn{X}, and
+#' A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 #' a large value indicates stronger conditional dependence.
+#' If \code{X = NULL}, it returns the \code{Kmac(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 #'
 #' @param Y a matrix (n by dy)
-#' @param X a matrix (n by dx)
+#' @param X a matrix (n by dx) or \code{NULL} if \eqn{X} is empty
 #' @param Z a matrix (n by dz)
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.
 #' @param Knn number of nearest neighbor to use; or "MST"
@@ -164,7 +163,15 @@ TnMST = function(Y,X,k) {
 #' y = (x + z) %% 1
 #' KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=T)
 KPCgraph = function(Y,X,Z,k,Knn = 1,trans_inv=FALSE) {
+  if (is.null(X)) return(Kmac(Y,Z,k,Knn))
   if (!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.matrix(X)) X = as.matrix(X)
+  if (!is.matrix(Z)) Z = as.matrix(Z)
+  if ((nrow(Y) != nrow(X)) || (nrow(Y) != nrow(Z))) stop("Number of rows of the inputs should be equal.")
+  if (Knn != "MST") {
+    if ((floor(Knn) != Knn) || (Knn <= 0)) stop("Knn should be a positive integer or the string MST.")
+    if (Knn + 2 > nrow(X)) stop("n should be greater than Knn + 1")
+  }
 
   Tn_XZ = TnKnn(Y,cbind(X,Z),k,Knn)
   Tn_X = TnKnn(Y,X,k,Knn)
@@ -196,12 +203,12 @@ double_center = function(M){
 #'
 #' Compute estimate of Kernel partial correlation (KPC) coefficient using conditional mean embeddings in the reproducing kernel Hilbert spaces (RKHS).
 #'
-#' The kernel partial correlation (KPC) coefficient measures the conditional dependency
+#' The kernel partial correlation (KPC) coefficient measures the conditional dependence
 #' between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
 #' It converges to the population quantity which is between 0 and 1.
-#' A small value indicates low conditional dependency between \eqn{Y} and \eqn{Z} given \eqn{X}, and
+#' A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 #' a large value indicates stronger conditional dependence.
-#' If \code{X = NULL}, it measures the unconditional dependency between \eqn{Y} and \eqn{Z}.
+#' If \code{X = NULL}, it measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 #'
 #' @param Y a matrix (n by dy)
 #' @param X a matrix (n by dx) or \code{NULL} if \eqn{X} is empty
@@ -227,8 +234,12 @@ double_center = function(M){
 #' # 0.4859424 (Population quantity = 0.5)
 KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.null(X)) {
+    if (!is.matrix(X)) X = as.matrix(X)
+    if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
+  }
   if (!is.matrix(Z)) Z = as.matrix(Z)
-  if (!is.null(X) & !is.matrix(X)) X = as.matrix(X)
+  if ((nrow(Y) != nrow(Z))) stop("Number of rows of the inputs should be equal.")
 
   n = dim(Y)[1]
   if (!appro) {
@@ -252,6 +263,7 @@ KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) 
     Lz = inchol(Z, kxz, tol = tol)
     Lz = Lz - rep(colMeans(Lz), rep.int(n, ncol(Lz)))
     Ly = inchol(Y, ky, tol = tol)
+    # a close examination of M shows we don't need to center Ly
     return(sum((t(Ly)%*%Lz%*%solve(dim(Y)[1]*eps*diag(dim(Lz)[2]) + t(Lz)%*%Lz)%*%t(Lz))^2)/sum(diag(double_center(kernlab::kernelMatrix(ky,Y)))))
   }
   L1 = inchol(X, kx, tol = tol)
@@ -272,12 +284,12 @@ KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) 
 #' Linear kernels are used for ky, kx, kxz in KPCRKHS, in which case the incomplete Cholesky decomposition is the data matrix itself and could speed up the computation to a great extent.
 #'
 #' Linear kernels are used for ky, kx, kxz in KPCRKHS.
-#' The kernel partial correlation (KPC) coefficient measures the conditional dependency
+#' The kernel partial correlation (KPC) coefficient measures the conditional dependence
 #' between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
 #' It converges to the population quantity which is between 0 and 1.
-#' A small value indicates low conditional dependency between \eqn{Y} and \eqn{Z} given \eqn{X}, and
+#' A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 #' a large value indicates stronger conditional dependence.
-#' If \code{X = NULL}, it measures the unconditional dependency between \eqn{Y} and \eqn{Z}.
+#' If \code{X = NULL}, it measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 #'
 #' @param Y a matrix (n by dy)
 #' @param Z a matrix (n by dz)
@@ -291,8 +303,12 @@ KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) 
 #' KPCRKHSlinear(y, x, z, 1e-5/n^(0.4))
 KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
+  if (!is.null(X)) {
+    if (!is.matrix(X)) X = as.matrix(X)
+    if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
+  }
   if (!is.matrix(Z)) Z = as.matrix(Z)
-  if (!is.null(X) & !is.matrix(X)) X = as.matrix(X)
+  if ((nrow(Y) != nrow(Z))) stop("Number of rows of the inputs should be equal.")
 
   n = dim(Y)[1]
 
@@ -301,7 +317,10 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
     Lz = Z
     Lz = Lz - rep(colMeans(Lz), rep.int(n, ncol(Lz)))
     Ly = Y
-    return(sum((t(Ly)%*%Lz%*%solve(dim(Y)[1]*eps*diag(dim(Lz)[2]) + t(Lz)%*%Lz)%*%t(Lz))^2)/sum(diag(double_center(kernlab::kernelMatrix(ky,Y)))))
+    tilde_Ly = Ly - rep(colMeans(Ly), rep.int(n, ncol(Ly)))
+    norm_sq = function(x) return(sum(x^2))
+    denominator = sum(apply(tilde_Ly, 1, norm_sq))
+    return(sum((t(Ly)%*%Lz%*%solve(dim(Y)[1]*eps*diag(dim(Lz)[2]) + t(Lz)%*%Lz)%*%t(Lz))^2)/denominator)
   }
   L1 = X
   L2 = cbind(X,Z)
@@ -365,7 +384,10 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
   if (is.null(num_features)) num_features <- dim(X)[2]
   if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
   if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
-
+  if (Knn != "MST") {
+    if ((floor(Knn) != Knn) || (Knn <= 0)) stop("Knn should be a positive integer or the string MST.")
+    if (Knn + 2 > nrow(X)) stop("n should be greater than Knn + 1")
+  }
   n = dim(Y)[1]
   p = ncol(X)
   Q = rep(0, num_features) # stores the values of Tn
@@ -557,6 +579,10 @@ Kmac = function(Y,X,k,Knn=1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if (!is.matrix(X)) X = as.matrix(X)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
+  if (Knn != "MST") {
+    if ((floor(Knn) != Knn) || (Knn <= 0)) stop("Knn should be a positive integer or the string MST.")
+    if (Knn + 2 > nrow(X)) stop("n should be greater than Knn + 1")
+  }
   kernelm = kernelMatrix(k,Y)
   dirsum=sum(diag(kernelm))
   crosssum=sum(kernelMatrix(k,Y))-dirsum
@@ -588,6 +614,10 @@ Klin = function(Y,X,k,Knn=1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if (!is.matrix(X)) X = as.matrix(X)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
+  if (Knn != "MST") {
+    if ((floor(Knn) != Knn) || (Knn <= 0)) stop("Knn should be a positive integer or the string MST.")
+    if (Knn + 2 > nrow(X)) stop("n should be greater than Knn + 1")
+  }
   n = dim(Y)[1]
   kernelm = kernelMatrix(k,Y)
 

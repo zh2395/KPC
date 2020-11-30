@@ -20,12 +20,12 @@ Linear kernels are used for ky, kx, kxz in KPCRKHS, in which case the incomplete
 }
 \details{
 Linear kernels are used for ky, kx, kxz in KPCRKHS.
-The kernel partial correlation (KPC) coefficient measures the conditional dependency
+The kernel partial correlation (KPC) coefficient measures the conditional dependence
 between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
 It converges to the population quantity which is between 0 and 1.
-A small value indicates low conditional dependency between \eqn{Y} and \eqn{Z} given \eqn{X}, and
+A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 a large value indicates stronger conditional dependence.
-If \code{X = NULL}, it measures the unconditional dependency between \eqn{Y} and \eqn{Z}.
+If \code{X = NULL}, it measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 }
 \examples{
 n = 2000
