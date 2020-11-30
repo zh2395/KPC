@@ -13,18 +13,13 @@
 
 #' 2017 Korea presidential election data
 #'
-#' A dataset containing 14 variables, consists of the voting results earned by the top five candidates from 250 electoral districts in Korea.
+#' A dataset containing 9 variables, consists of the voting results earned by the top five candidates from 250 electoral districts in Korea.
 #'
-#' @format A data frame with 1250 rows and 14 variables:
+#' @format A data frame with 1250 rows and 9 variables:
 #' \describe{
 #'   \item{PrecinctCode}{250 precinct codes designated by the election committee (4 digits)}
 #'   \item{CityCode}{250 city codes of administrative standard code management system (5 digits)}
-#'   \item{Municipalities}{250 municipalities}
-#'   \item{City}{17 metropolitan cities}
-#'   \item{Name}{Symbols 1-5, corresponding to Moon Jae-in, Hong Jun-pyo, Ahn Cheol-soo, Yoo Seung-min, Shim Sang-jung}
-#'   \item{PoliticalParty}{The political parties of the first three candidates correspond to rogressivism, conservatism and centrism respectively.}
-#'   \item{CandidateName}{The names of the candidates}
-#'   \item{FirstPlace}{No.1 candidate by city, county and district}
+#'   \item{CandidateName}{Symbols 1-5, corresponding to Moon Jae-in, Hong Jun-pyo, Ahn Cheol-soo, Yoo Seung-min, Shim Sang-jung}
 #'   \item{AveAge}{Average age of voters in 17 years: statistics on resident registration population of the Ministry of Government Administration and Home Affairs}
 #'   \item{AveYearEdu}{Average number of years of education for voters}
 #'   \item{AveHousePrice}{Average price per square meter in 17 years}

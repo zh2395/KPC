@@ -114,7 +114,7 @@ TnMST = function(Y,X,k) {
     return((sum(sapply(2:(n-1), node_calculator))/2 + k(Y[1,],Y[2,]) + k(Y[n-1,],Y[n,]))/n)
   }
 
-  out=emstreeR::ComputeMST(X,verbose = F)
+  out=emstreeR::ComputeMST(X,verbose = FALSE)
   tmp = matrix(0,n,2)
   # the first column is the degree of node i
   # the second column is the sum of k(xi,x_{N(i)})
@@ -155,13 +155,13 @@ TnMST = function(Y,X,k) {
 #' x = rnorm(n)
 #' z = rnorm(n)
 #' y = x + z + rnorm(n,1,1)
-#' KPCgraph(y,x,z,vanilladot(),Knn=1,trans_inv=F)
+#' KPCgraph(y,x,z,vanilladot(),Knn=1,trans_inv=FALSE)
 #'
 #' n = 1000
 #' x = runif(n)
 #' z = runif(n)
 #' y = (x + z) %% 1
-#' KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=T)
+#' KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=TRUE)
 KPCgraph = function(Y,X,Z,k,Knn = 1,trans_inv=FALSE) {
   if (is.null(X)) return(Kmac(Y,Z,k,Knn))
   if (!is.matrix(Y)) Y = as.matrix(Y)
@@ -228,9 +228,9 @@ double_center = function(M){
 #' y = x + z + rnorm(n,1,1)
 #' library(kernlab)
 #' k = vanilladot()
-#' KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = F)
+#' KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = FALSE)
 #' # 0.4859424 (Population quantity = 0.5)
-#' KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = T, tol = 1e-5)
+#' KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = TRUE, tol = 1e-5)
 #' # 0.4859424 (Population quantity = 0.5)
 KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
@@ -361,10 +361,11 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 #' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
 #'
-#' # install the package olsrr first
-#' surgical = olsrr::surgical
-#' for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
-#' colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],kernlab::rbfdot(1/(2*median(dist(surgical$y))^2)),Knn=1)]
+#' ### install the package olsrr first
+#' # surgical = olsrr::surgical
+#' # for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
+#' # ky = kernlab::rbfdot(1/(2*median(dist(surgical$y))^2))
+#' # colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],ky,Knn=1)]
 #' #### "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 #' \dontrun{
 #' # This example may take several minutes on a personal computer.
@@ -377,7 +378,7 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' # 1 2 3
 #' }
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores = parallel::detectCores(), verbose = F){
+KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores = parallel::detectCores(), verbose = FALSE){
   if (!is.matrix(X)) X = as.matrix(X)
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
@@ -459,9 +460,9 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)*0.5
 #' library(kernlab)
 #' kx = c(rbfdot(1),rbfdot(1/2),rbfdot(1/3))
-#' RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
+#' RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = FALSE, numCores = 1)
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = F, tol = 1e-3, numCores = parallel::detectCores(), verbose = F){
+RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = FALSE, tol = 1e-3, numCores = parallel::detectCores(), verbose = FALSE){
   if (!is.matrix(X)) X = as.matrix(X)
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")

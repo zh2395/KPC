@@ -36,11 +36,11 @@ n = 2000
 x = rnorm(n)
 z = rnorm(n)
 y = x + z + rnorm(n,1,1)
-KPCgraph(y,x,z,vanilladot(),Knn=1,trans_inv=F)
+KPCgraph(y,x,z,vanilladot(),Knn=1,trans_inv=FALSE)
 
 n = 1000
 x = runif(n)
 z = runif(n)
 y = (x + z) \%\% 1
-KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=T)
+KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=TRUE)
 }

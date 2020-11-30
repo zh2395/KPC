@@ -12,7 +12,7 @@ KFOCI(
   num_features = NULL,
   stop = TRUE,
   numCores = parallel::detectCores(),
-  verbose = F
+  verbose = FALSE
 )
 }
 \arguments{
@@ -50,10 +50,11 @@ X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
 
-# install the package olsrr first
-surgical = olsrr::surgical
-for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
-colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],kernlab::rbfdot(1/(2*median(dist(surgical$y))^2)),Knn=1)]
+### install the package olsrr first
+# surgical = olsrr::surgical
+# for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
+# ky = kernlab::rbfdot(1/(2*median(dist(surgical$y))^2))
+# colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],ky,Knn=1)]
 #### "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 \dontrun{
 # This example may take several minutes on a personal computer.

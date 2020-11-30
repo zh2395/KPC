@@ -11,10 +11,10 @@ RKHS_select(
   kx,
   num_features,
   eps,
-  appro = F,
+  appro = FALSE,
   tol = 0.001,
   numCores = parallel::detectCores(),
-  verbose = F
+  verbose = FALSE
 )
 }
 \arguments{
@@ -54,5 +54,5 @@ X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)*0.5
 library(kernlab)
 kx = c(rbfdot(1),rbfdot(1/2),rbfdot(1/3))
-RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
+RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = FALSE, numCores = 1)
 }
