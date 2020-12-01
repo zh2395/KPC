@@ -34,5 +34,5 @@ library(kernlab)
 Klin(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
 }
 \references{
-Deb, N., P. Ghosal, and B. Sen (2020). Measuring association on topological spaces using kernels and geometric graphs
+Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.
 }

@@ -584,7 +584,7 @@ KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, to
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
 #' @return kmac: the empirical kernel measure of association
 #' @export
-#' @references Deb, N., P. Ghosal, and B. Sen (2020). Measuring association on topological spaces using kernels and geometric graphs
+#' @references Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.
 #' @examples
 #' library(kernlab)
 #' Kmac(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
@@ -620,7 +620,7 @@ Kmac = function(Y,X,k,Knn=1) {
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
 #' @return klin: an empirical kernel measure of association which can be computed in near linear time when Knn graphs are used.
 #' @export
-#' @references Deb, N., P. Ghosal, and B. Sen (2020). Measuring association on topological spaces using kernels and geometric graphs
+#' @references Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.
 #' @examples
 #' library(kernlab)
 #' Klin(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
