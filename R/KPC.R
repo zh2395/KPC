@@ -384,7 +384,7 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' set.seed(1)
 #' X = matrix(rnorm(n * p), ncol = p)
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1)
+#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, verbose=TRUE)
 #' # 1 2 3
 #' }
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
