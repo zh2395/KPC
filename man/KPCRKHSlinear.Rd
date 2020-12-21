@@ -4,7 +4,7 @@
 \alias{KPCRKHSlinear}
 \title{Kernel partial correlation with RKHS method using linear kernels}
 \usage{
-KPCRKHSlinear(Y, X = NULL, Z, eps)
+KPCRKHSlinear(Y, X = NULL, Z, eps = 0.001)
 }
 \arguments{
 \item{Y}{a matrix (n by dy)}
@@ -14,6 +14,9 @@ KPCRKHSlinear(Y, X = NULL, Z, eps)
 \item{Z}{a matrix (n by dz)}
 
 \item{eps}{a small regularization parameter for inverting the empirical cross-covariance operator}
+}
+\value{
+The algorithm returns a real number which is the estimated KPC (with linear kernel).
 }
 \description{
 Linear kernels are used for ky, kx, kxz in KPCRKHS, in which case the incomplete Cholesky decomposition is the data matrix itself and could speed up the computation to a great extent.
@@ -33,4 +36,7 @@ x = rnorm(n)
 z = rnorm(n)
 y = x + z + rnorm(n,1,1)
 KPCRKHSlinear(y, x, z, 1e-5/n^(0.4))
+}
+\seealso{
+\code{\link{KPCRKHS}}
 }

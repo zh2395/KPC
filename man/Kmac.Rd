@@ -4,29 +4,34 @@
 \alias{Kmac}
 \title{\eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) with geometric graphs.}
 \usage{
-Kmac(Y, X, k, Knn = 1)
+Kmac(
+  Y,
+  X,
+  k = kernlab::rbfdot(1/(2 * stats::median(stats::dist(Y))^2)),
+  Knn = 1
+)
 }
 \arguments{
 \item{Y}{a matrix of response (n by dy)}
 
 \item{X}{a matrix of predictors (n by dx)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}}
 
 \item{Knn}{the number of K-nearest neighbor to use; or "MST".}
 }
 \value{
-kmac: the empirical kernel measure of association
+The algorithm returns a real number "kmac", the empirical kernel measure of association
 }
 \description{
-Calculate \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) using directed Knn graph or minimum spanning tree (MST).
+Calculate \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) using directed K-nn graph or minimum spanning tree (MST).
 }
 \details{
 \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
-For Knn graph, ties will be broken at random. MST is found using package \code{emstreeR}.
+For K-nn graph, ties will be broken at random. MST is found using package \code{emstreeR}.
 In particular,
-\deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} K(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}K(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n K(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}K(Y_i,Y_j)}},
-where \eqn{G_n} denotes a MST or Knn graph on \eqn{X_1,\ldots , X_n}, \eqn{\mathcal{E}(G_n)} denotes the set of edges of \eqn{G_n} and
+\deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}},
+where \eqn{G_n} denotes a MST or K-nn graph on \eqn{X_1,\ldots , X_n}, \eqn{\mathcal{E}(G_n)} denotes the set of edges of \eqn{G_n} and
 \eqn{(i,j)\in\mathcal{E}(G_n)} implies that there is an edge from \eqn{X_i} to \eqn{X_j} in \eqn{G_n}.
 }
 \examples{
@@ -35,4 +40,7 @@ Kmac(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
 }
 \references{
 Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.
+}
+\seealso{
+\code{\link{KPCgraph}}, \code{\link{Klin}}
 }

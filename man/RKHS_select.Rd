@@ -7,10 +7,10 @@
 RKHS_select(
   Y,
   X,
-  ky,
-  kS,
   num_features,
-  eps,
+  ky = kernlab::rbfdot(1/(2 * stats::median(stats::dist(Y))^2)),
+  kS = NULL,
+  eps = 0.001,
   appro = FALSE,
   tol = 1e-05,
   numCores = 1,
@@ -22,11 +22,11 @@ RKHS_select(
 
 \item{X}{a matrix of predictors (n by dx)}
 
-\item{ky}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
-
-\item{kS}{a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer.}
-
 \item{num_features}{the number of variables to be selected, cannot be larger than dx.}
+
+\item{ky}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}}
+
+\item{kS}{a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer. If \code{kS == NULL}, Gaussian kernel with empitical bandwidth will be used, i.e., \code{kernlab::rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2))}}
 
 \item{eps}{a positive number; the regularization parameter for the RKHS estimator}
 
@@ -39,7 +39,7 @@ RKHS_select(
 \item{verbose}{whether to print each selected variables during the forward stepwise algorithm}
 }
 \value{
-a vector of the indices from \code{1,...,dx} of the selected variables
+The algorithm returns a vector of the indices from \code{1,...,dx} of the selected variables
 }
 \description{
 The algorithm performs a forward stepwise variable selection using RKHS estimators.
@@ -55,7 +55,10 @@ X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 library(kernlab)
 kS = function(X,S) return(rbfdot(1/length(S)))
-RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = FALSE, numCores = 1)
+RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
 kS = function(X,S) return(rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2)))
-RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = FALSE, numCores = 1)
+RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
+}
+\seealso{
+\code{\link{KPCgraph}}, \code{\link{KPCRKHS}}
 }

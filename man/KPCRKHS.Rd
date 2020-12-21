@@ -4,7 +4,17 @@
 \alias{KPCRKHS}
 \title{Kernel partial correlation with RKHS method}
 \usage{
-KPCRKHS(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-05)
+KPCRKHS(
+  Y,
+  X = NULL,
+  Z,
+  ky = kernlab::rbfdot(1/(2 * stats::median(stats::dist(Y))^2)),
+  kx = kernlab::rbfdot(1/(2 * stats::median(stats::dist(X))^2)),
+  kxz = kernlab::rbfdot(1/(2 * stats::median(stats::dist(cbind(X, Z)))^2)),
+  eps = 0.001,
+  appro = FALSE,
+  tol = 1e-05
+)
 }
 \arguments{
 \item{Y}{a matrix (n by dy)}
@@ -13,7 +23,7 @@ KPCRKHS(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-05)
 
 \item{Z}{a matrix (n by dz)}
 
-\item{ky}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
+\item{ky}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.}
 
 \item{kx}{the kernel function for \eqn{X}}
 
@@ -25,13 +35,16 @@ KPCRKHS(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-05)
 
 \item{tol}{tolerance used for incomplete Cholesky decomposition (implemented by the function \code{inchol} in the package \code{kernlab})}
 }
+\value{
+The algorithm returns a real number which is the estimated KPC.
+}
 \description{
 Compute estimate of Kernel partial correlation (KPC) coefficient using conditional mean embeddings in the reproducing kernel Hilbert spaces (RKHS).
 }
 \details{
 The kernel partial correlation (KPC) coefficient measures the conditional dependence
 between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
-It converges to the population quantity which is between 0 and 1.
+It converges to the population quantity (depending on the kernel) which is between 0 and 1.
 A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 a large value indicates stronger conditional dependence.
 If \code{X = NULL}, it measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
@@ -48,4 +61,7 @@ KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = FALSE)
 # 0.4855134 (Population quantity = 0.5)
 KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = TRUE, tol = 1e-5)
 # 0.4855134 (Population quantity = 0.5)
+}
+\seealso{
+\code{\link{KPCgraph}}
 }

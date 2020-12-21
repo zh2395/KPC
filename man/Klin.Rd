@@ -4,7 +4,12 @@
 \alias{Klin}
 \title{\eqn{\hat{\eta}_n^{\mbox{lin}}} with geometric graphs.}
 \usage{
-Klin(Y, X, k, Knn = 1)
+Klin(
+  Y,
+  X,
+  k = kernlab::rbfdot(1/(2 * stats::median(stats::dist(Y))^2)),
+  Knn = 1
+)
 }
 \arguments{
 \item{Y}{a matrix of response (n by dy)}
@@ -16,17 +21,17 @@ Klin(Y, X, k, Knn = 1)
 \item{Knn}{the number of K-nearest neighbor to use; or "MST".}
 }
 \value{
-klin: an empirical kernel measure of association which can be computed in near linear time when Knn graphs are used.
+The algorithm returns a real number "klin": an empirical kernel measure of association which can be computed in near linear time when K-nn graphs are used.
 }
 \description{
-Calculate \eqn{\hat{\eta}_n^{\mbox{lin}}} (the unconditional version of graph-based KPC) using directed Knn graph or minimum spanning tree (MST).
+Calculate \eqn{\hat{\eta}_n^{\mbox{lin}}} (the unconditional version of graph-based KPC) using directed K-nn graph or minimum spanning tree (MST).
 The computational complexity is O(nlog(n))
 }
 \details{
 \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
-For Knn graph, \eqn{\hat{\eta}_n} can be computed in near linear time (in \eqn{n}).
+For K-nn graph, \eqn{\hat{\eta}_n} can be computed in near linear time (in \eqn{n}).
 In particular,
-\deqn{\hat{\eta}_n^{\mbox{lin}}:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} K(Y_i,Y_j)-(n-1)^{-1}\sum_{i=1}^{n-1} K(Y_i,Y_{i+1})}{n^{-1}\sum_{i=1}^n K(Y_i,Y_i)-(n-1)^{-1}\sum_{i=1}^{n-1} K(Y_i,Y_{i+1})}},
+\deqn{\hat{\eta}_n^{\mbox{lin}}:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}},
 where all symbols have their usual meanings as in the definition of \eqn{\hat{\eta}_n}.
 }
 \examples{
@@ -35,4 +40,7 @@ Klin(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
 }
 \references{
 Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.
+}
+\seealso{
+\code{\link{KPCgraph}}, \code{\link{Kmac}}
 }

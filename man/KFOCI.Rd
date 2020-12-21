@@ -7,7 +7,7 @@
 KFOCI(
   Y,
   X,
-  k,
+  k = kernlab::rbfdot(1/(2 * stats::median(stats::dist(Y))^2)),
   Knn = 1,
   num_features = NULL,
   stop = TRUE,
@@ -20,7 +20,7 @@ KFOCI(
 
 \item{X}{a matrix of predictors (n by dx)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.}
 
 \item{Knn}{the number of nearest neighbor; or "MST"}
 
@@ -34,13 +34,13 @@ case it will be set equal to dx. If stop == TRUE (see below), then num_features 
 \item{verbose}{whether to print each selected variables during the forward stepwise algorithm}
 }
 \value{
-a vector of the indices from 1,...,dx of the selected variables
+The algorithm returns a vector of the indices from 1,...,dx of the selected variables
 }
 \description{
-Variable selection with KPC using directed Knn graph or minimum spanning tree (MST)
+Variable selection with KPC using directed K-nn graph or minimum spanning tree (MST)
 }
 \details{
-A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\hat{\rho^2}(Y,X_j | selected X_i)} is selected.
+A stepwise forward selection of variables using KPC. At each step the \eqn{X_j} maximizing \eqn{\hat{\rho^2}(Y,X_j | selected X_i)} is selected.
 It is suggested to normalize the predictors before applying KFOCI.
 }
 \examples{
@@ -49,14 +49,14 @@ p = 10
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores=1)
-
-### install the package olsrr first
-#surgical = olsrr::surgical
-#for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
-#ky = kernlab::rbfdot(1/(2*median(dist(surgical$y))^2))
-#colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],ky,Knn=1)]
-#### "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 \dontrun{
+### install the package olsrr first
+surgical = olsrr::surgical
+for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
+ky = kernlab::rbfdot(1/(2*stats::median(stats::dist(surgical$y))^2))
+colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],ky,Knn=1)]
+#### "enzyme_test" "pindex" "liver_test"  "alc_heavy"
+
 # This example may take several minutes on a personal computer.
 n = 2000
 p = 1000
@@ -66,4 +66,7 @@ Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 7, verbose=TRUE)
 # 1 2 3
 }
+}
+\seealso{
+\code{\link{KPCgraph}}, \code{\link{KPCRKHS}}
 }

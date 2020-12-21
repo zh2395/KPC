@@ -4,7 +4,14 @@
 \alias{KPCgraph}
 \title{Kernel partial correlation with geometric graphs}
 \usage{
-KPCgraph(Y, X, Z, k, Knn = 1, trans_inv = FALSE)
+KPCgraph(
+  Y,
+  X,
+  Z,
+  k = kernlab::rbfdot(1/(2 * stats::median(stats::dist(Y))^2)),
+  Knn = 1,
+  trans_inv = FALSE
+)
 }
 \arguments{
 \item{Y}{a matrix (n by dy)}
@@ -13,11 +20,14 @@ KPCgraph(Y, X, Z, k, Knn = 1, trans_inv = FALSE)
 
 \item{Z}{a matrix (n by dz)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.}
 
 \item{Knn}{number of nearest neighbor to use; or "MST"}
 
 \item{trans_inv}{TRUE or FALSE. Is \eqn{k(y, y)} free of \eqn{y}?}
+}
+\value{
+The algorithm returns a real number which is the estimated KPC.
 }
 \description{
 Calculate the kernel partial correlation (KPC) coefficient with directed Knn (nearest neighbor) graph or minimum spanning tree (MST).
@@ -25,10 +35,10 @@ Calculate the kernel partial correlation (KPC) coefficient with directed Knn (ne
 \details{
 The kernel partial correlation squared (KPC) measures the conditional dependence
 between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
-It converges to the population quantity which is between 0 and 1.
+It converges to the population quantity (depending on the kernel) which is between 0 and 1.
 A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 a large value indicates stronger conditional dependence.
-If \code{X = NULL}, it returns the \code{Kmac(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
+If \code{X == NULL}, it returns the \code{Kmac(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 }
 \examples{
 library(kernlab)
@@ -45,5 +55,5 @@ y = (x + z) \%\% 1
 KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=TRUE)
 }
 \seealso{
-\code{\link{Kmac}}, \code{\link{Klin}}
+\code{\link{KPCRKHS}}, \code{\link{Kmac}}, \code{\link{Klin}}
 }

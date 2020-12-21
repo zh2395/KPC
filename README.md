@@ -32,7 +32,7 @@ The inputs are:
 `Y`: a matrix of n rows;
 `X`: a matrix of n rows, or NULL if X is empty, in which case it will return `Kmac(Y,Z,k,Knn)`, which measures the unconditional dependence between Y and Z.
 `Z`: a matrix of n rows;
-`k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g. Gaussian kernel `rbfdot(sigma = 1)`, linear kernel `vanilladot()`;
+`k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g. Gaussian kernel `rbfdot(sigma = 1)`, linear kernel `vanilladot()`; In practice, Gaussian kernel with empirical bandwidth `kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2))` may be a good choice.
 `Knn`: the number of nearest neighbors to use, or "MST"; `trans_inv`: whether k(y, y) is free of y.
 
 ``` r
@@ -105,9 +105,9 @@ One needs to pre-specify the number of variables to be selected.
 The inputs are:
 `Y`: a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx);
+`num_features`: the number of variables to be selected, cannot be larger than dx;
 `ky`: the kernel function for Y.
 `kS`: a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer.
-`num_features`: the number of variables to be selected, cannot be larger than dx;
 `eps`: a positive number, the regularization parameter for RKHS based KPC estimator;
 `appro` whether to use incomplete Cholesky decomposition for approximation;
 `tol`: tolerance used for incomplete Cholesky decomposition (implemented by `inchol` in package `kernlab`).
@@ -123,10 +123,10 @@ X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 library(kernlab)
 kS = function(X,S) return(rbfdot(1/length(S)))
-RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = F, numCores = 1)
+RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
 # 1 2 3
 kS = function(X,S) return(rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2)))
-RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = FALSE, numCores = 1)
+RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
 # 1 2 3
 ```
 
