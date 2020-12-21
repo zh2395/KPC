@@ -30,8 +30,7 @@ See the documentation (help page) of the R package for more details.
 `KPCgraph` implements the KPC estimator based on geometric graphs.
 The inputs are:
 `Y`: a matrix of n rows;
-`X`: a matrix of n rows, or NULL if X is empty, in which case it will return `Kmac(Y,Z,k,Knn)`, which measures the unconditional dependence between Y and Z.the coefficient
-measures the unconditional association between Y and Z;
+`X`: a matrix of n rows, or NULL if X is empty, in which case it will return `Kmac(Y,Z,k,Knn)`, which measures the unconditional dependence between Y and Z.
 `Z`: a matrix of n rows;
 `k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g. Gaussian kernel `rbfdot(sigma = 1)`, linear kernel `vanilladot()`;
 `Knn`: the number of nearest neighbors to use, or "MST"; `trans_inv`: whether k(y, y) is free of y.

@@ -142,7 +142,7 @@ TnMST = function(Y,X,k) {
 #' It converges to the population quantity which is between 0 and 1.
 #' A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 #' a large value indicates stronger conditional dependence.
-#' If \code{X = NULL}, it returns the \code{Kmac(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
+#' If \code{X == NULL}, it returns the \code{Kmac(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 #'
 #' @param Y a matrix (n by dy)
 #' @param X a matrix (n by dx) or \code{NULL} if \eqn{X} is empty
