@@ -107,7 +107,7 @@ The inputs are:
 `Y`: a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx);
 `ky`: the kernel function for Y.
-`kx`: a list of length `num_features`, where `kx[[k]]` is the kernel used for (Xj1,...,Xjk), the first k selected variables;
+`kS`: a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer.
 `num_features`: the number of variables to be selected, cannot be larger than dx;
 `eps`: a positive number, the regularization parameter for RKHS based KPC estimator;
 `appro` whether to use incomplete Cholesky decomposition for approximation;
@@ -121,10 +121,13 @@ n = 200
 p = 100
 set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
-Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3]) + rnorm(n)*0.5
+Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 library(kernlab)
-kx = c(rbfdot(1),rbfdot(1/2),rbfdot(1/3))
-RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = F, numCores = 1)
+kS = function(X,S) return(rbfdot(1/length(S)))
+RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = F, numCores = 1)
+# 1 2 3
+kS = function(X,S) return(rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2)))
+RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = FALSE, numCores = 1)
 # 1 2 3
 ```
 
@@ -155,7 +158,6 @@ library(kernlab)
 KPCgraph(med$D,med$C,med$U,rbfdot(1/(2*median(dist(med$D))^2)),trans_inv=T)
 # 0.04069334
 # Theoretical KPC is 0 since D is independent of U given C
-KPCgraph(med$D,med$U,med$C,rbfdot(1/(2*median(dist(med$D))^2)),trans_inv=T)
 set.seed(1) # There is randomness in breaking the ties
 KPCgraph(med$D,med$U,med$C,rbfdot(1/(2*median(dist(med$D))^2)),trans_inv=T)
 # 0.3255831 

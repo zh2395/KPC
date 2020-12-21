@@ -11,7 +11,7 @@ KFOCI(
   Knn = 1,
   num_features = NULL,
   stop = TRUE,
-  numCores = parallel::detectCores(),
+  numCores = 1,
   verbose = FALSE
 )
 }
@@ -45,10 +45,10 @@ It is suggested to normalize the predictors before applying KFOCI.
 }
 \examples{
 n = 200
-p = 100
+p = 10
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
+KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores=1)
 
 ### install the package olsrr first
 #surgical = olsrr::surgical
@@ -63,7 +63,7 @@ p = 1000
 set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, verbose=TRUE)
+KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 7, verbose=TRUE)
 # 1 2 3
 }
 }

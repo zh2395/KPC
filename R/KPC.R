@@ -240,7 +240,7 @@ double_center = function(M){
 #' # 0.4855134 (Population quantity = 0.5)
 #' KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = TRUE, tol = 1e-5)
 #' # 0.4855134 (Population quantity = 0.5)
-KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) {
+KPCRKHS = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-5) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if (!is.null(X)) {
     if (!is.matrix(X)) X = as.matrix(X)
@@ -473,7 +473,7 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
 #' kx = c(rbfdot(1),rbfdot(1/2),rbfdot(1/3))
 #' RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = FALSE, numCores = 1)
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = FALSE, tol = 1e-3, numCores = parallel::detectCores(), verbose = FALSE){
+RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = FALSE, tol = 1e-5, numCores = parallel::detectCores(), verbose = FALSE){
   if (!is.matrix(X)) X = as.matrix(X)
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
@@ -529,7 +529,7 @@ RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = FALSE, tol = 1e
 
 # calculate the numerator of the RKHS estimator
 # used for stepwise variable selection
-KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-3) {
+KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-5) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if (!is.matrix(Z)) Z = as.matrix(Z)
   if (!is.null(X) & !is.matrix(X)) X = as.matrix(X)

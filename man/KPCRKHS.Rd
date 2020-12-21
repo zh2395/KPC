@@ -4,7 +4,7 @@
 \alias{KPCRKHS}
 \title{Kernel partial correlation with RKHS method}
 \usage{
-KPCRKHS(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 0.001)
+KPCRKHS(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, tol = 1e-05)
 }
 \arguments{
 \item{Y}{a matrix (n by dy)}
