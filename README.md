@@ -155,11 +155,11 @@ The medical data included in the package are collected from *Edwards, D. (2012).
 data("med")
 for (i in 1:3) med[,i] = (med[,i] - mean(med[,i]))/sd(med[,i]) # normalization
 library(kernlab)
-KPCgraph(med$D,med$C,med$U,rbfdot(1/(2*median(dist(med$D))^2)),trans_inv=T)
+KPCgraph(med$D,med$C,med$U,rbfdot(1/(2*median(dist(med$D))^2)),Knn=1,trans_inv=T)
 # 0.04069334
 # Theoretical KPC is 0 since D is independent of U given C
 set.seed(1) # There is randomness in breaking the ties
-KPCgraph(med$D,med$U,med$C,rbfdot(1/(2*median(dist(med$D))^2)),trans_inv=T)
+KPCgraph(med$D,med$U,med$C,rbfdot(1/(2*median(dist(med$D))^2)),Knn=1,trans_inv=T)
 # 0.3255831 
 # D is associated with C controlling U
 

@@ -8,12 +8,12 @@ RKHS_select(
   Y,
   X,
   ky,
-  kx,
+  kS,
   num_features,
   eps,
   appro = FALSE,
   tol = 1e-05,
-  numCores = parallel::detectCores(),
+  numCores = 1,
   verbose = FALSE
 )
 }
@@ -24,7 +24,7 @@ RKHS_select(
 
 \item{ky}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.}
 
-\item{kx}{a list of length \code{num_features}; \code{kx[[k]]} is the kernel used for \code{(Xj1,...,Xjk)}, the first \code{k} selected variables.}
+\item{kS}{a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer.}
 
 \item{num_features}{the number of variables to be selected, cannot be larger than dx.}
 
@@ -46,6 +46,7 @@ The algorithm performs a forward stepwise variable selection using RKHS estimato
 }
 \details{
 A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\tilde{\rho^2}(Y,X_j | selected X_i)} is selected.
+It is suggested to normalize the features before applying the algorithm.
 }
 \examples{
 n = 200
@@ -53,6 +54,8 @@ p = 10
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 library(kernlab)
-kx = c(rbfdot(1),rbfdot(1/2),rbfdot(1/3))
-RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = FALSE, numCores = 1)
+kS = function(X,S) return(rbfdot(1/length(S)))
+RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = FALSE, numCores = 1)
+kS = function(X,S) return(rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2)))
+RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = FALSE, numCores = 1)
 }

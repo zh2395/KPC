@@ -102,9 +102,7 @@ get_neighbors = function(X,Knn) {
 
 # Calculate Tn using minimum spanning tree (MST).
 TnMST = function(Y,X,k) {
-  if (!is.data.frame(X)) X = as.data.frame(X)
   if (!is.matrix(Y)) Y = as.matrix(Y)
-
   n = dim(Y)[1]
 
   if (dim(X)[2] == 1) {
@@ -115,6 +113,8 @@ TnMST = function(Y,X,k) {
     }
     return((sum(sapply(2:(n-1), node_calculator))/2 + k(Y[1,],Y[2,]) + k(Y[n-1,],Y[n,]))/n)
   }
+
+  if (!is.data.frame(X)) X = as.data.frame(X)
 
   out=emstreeR::ComputeMST(X,verbose = FALSE)
   tmp = matrix(0,n,2)
@@ -366,10 +366,10 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' @return a vector of the indices from 1,...,dx of the selected variables
 #' @examples
 #' n = 200
-#' p = 100
+#' p = 10
 #' X = matrix(rnorm(n * p), ncol = p)
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
+#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores=1)
 #'
 #' ### install the package olsrr first
 #' #surgical = olsrr::surgical
@@ -384,11 +384,11 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps) {
 #' set.seed(1)
 #' X = matrix(rnorm(n * p), ncol = p)
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, verbose=TRUE)
+#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 7, verbose=TRUE)
 #' # 1 2 3
 #' }
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores = parallel::detectCores(), verbose = FALSE){
+KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores = 1, verbose = FALSE){
   if (!is.matrix(X)) X = as.matrix(X)
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
@@ -451,11 +451,12 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
 #' The algorithm performs a forward stepwise variable selection using RKHS estimators.
 #'
 #' A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\tilde{\rho^2}(Y,X_j | selected X_i)} is selected.
+#' It is suggested to normalize the features before applying the algorithm.
 #'
 #' @param Y a matrix of responses (n by dy)
 #' @param X a matrix of predictors (n by dx)
 #' @param ky a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}. In practice, Gaussian kernel with empirical bandwidth \code{kernlab::rbfdot(1/(2*median(dist(Y))^2))} may be a good choice.
-#' @param kx a list of length \code{num_features}; \code{kx[[k]]} is the kernel used for \code{(Xj1,...,Xjk)}, the first \code{k} selected variables.
+#' @param kS a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer.
 #' @param num_features the number of variables to be selected, cannot be larger than dx.
 #' @param eps a positive number; the regularization parameter for the RKHS estimator
 #' @param appro whether to use incomplete Cholesky decomposition for approximation
@@ -470,10 +471,12 @@ KFOCI <- function(Y, X, k, Knn = 1, num_features = NULL, stop = TRUE, numCores =
 #' X = matrix(rnorm(n * p), ncol = p)
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 #' library(kernlab)
-#' kx = c(rbfdot(1),rbfdot(1/2),rbfdot(1/3))
-#' RKHS_select(Y, X, rbfdot(1), kx, 3, eps = 1e-3, appro = FALSE, numCores = 1)
+#' kS = function(X,S) return(rbfdot(1/length(S)))
+#' RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = FALSE, numCores = 1)
+#' kS = function(X,S) return(rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2)))
+#' RKHS_select(Y, X, rbfdot(1), kS, 3, eps = 1e-3, appro = FALSE, numCores = 1)
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = FALSE, tol = 1e-5, numCores = parallel::detectCores(), verbose = FALSE){
+RKHS_select <- function(Y, X, ky, kS, num_features, eps, appro = FALSE, tol = 1e-5, numCores = 1, verbose = FALSE){
   if (!is.matrix(X)) X = as.matrix(X)
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
@@ -487,7 +490,7 @@ RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = FALSE, tol = 1e
   index_select = rep(0, num_features)
   # select the first variable
   estimateQFixedY <- function(id){
-    return(KPCRKHS_numerator(Y,NULL,X[,id],ky,NULL,kx[[1]],eps,appro,tol))
+    return(KPCRKHS_numerator(Y,NULL,X[,id],ky,NULL,kS(X,id),eps,appro,tol))
   }
   seq_Q = parallel::mclapply(seq(1, p), estimateQFixedY, mc.cores = numCores)
   seq_Q = unlist(seq_Q)
@@ -507,7 +510,7 @@ RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = FALSE, tol = 1e
 
     # find the next best feature
     estimateQFixedYandSubX <- function(id){
-      return(KPCRKHS_numerator(Y, X[,index_select[1:count]], X[, c(index_select[1:count], id)], ky, kx[[count]], kx[[count+1]], eps,appro,tol))
+      return(KPCRKHS_numerator(Y, X[,index_select[1:count]], X[, c(index_select[1:count], id)], ky, kS(X,index_select[1:count]), kS(X,c(index_select[1:count], id)), eps,appro,tol))
     }
 
     if (length(index_left) == 1) {
@@ -525,6 +528,7 @@ RKHS_select <- function(Y, X, ky, kx, num_features, eps, appro = FALSE, tol = 1e
 
   return(index_select[1:count])
 }
+
 
 
 # calculate the numerator of the RKHS estimator
@@ -566,6 +570,53 @@ KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, to
   numerator = sum((M%*%L3)^2)
   return(numerator)
 }
+# KPCRKHS_numerator = function(Y, X = NULL, Z, ky, eps, appro = FALSE, tol = 1e-5) {
+#   if (!is.matrix(Y)) Y = as.matrix(Y)
+#   if (!is.matrix(Z)) Z = as.matrix(Z)
+#   if (!is.null(X) & !is.matrix(X)) X = as.matrix(X)
+#
+#   if (is.null(X)) {
+#     kxz = kernlab::rbfdot(1/(2*stats::median(stats::dist(Z))^2))
+#   }
+#   else {
+#     kx = kernlab::rbfdot(1/(2*stats::median(stats::dist(X))^2))
+#     kxz = kernlab::rbfdot(1/(2*stats::median(stats::dist(cbind(X,Z)))^2))
+#   }
+#
+#   n = dim(Y)[1]
+#   if (!appro) {
+#     # exact computation
+#     tilde_Ky = double_center(kernlab::kernelMatrix(ky,Y))
+#     if (is.null(X)) {
+#       M = diag(n) - n*eps*solve(double_center(kernlab::kernelMatrix(kxz,Z))+n*eps*diag(n))
+#       numerator = sum(tilde_Ky * base::crossprod(M))
+#       return(numerator)
+#     }
+#     else {
+#       N = solve(double_center(kernlab::kernelMatrix(kx,X)) + n*eps*diag(n))
+#       numerator = sum(tilde_Ky * base::crossprod(solve(double_center(kernlab::kernelMatrix(kxz,cbind(X,Z))) + n*eps*diag(n)) - N))
+#       return(numerator)
+#     }
+#   }
+#   # Approximate computation with incomplete Cholesky decomposition
+#   if (is.null(X)) {
+#     Lz = inchol(Z, kxz, tol = tol)
+#     Lz = Lz - rep(colMeans(Lz), rep.int(n, ncol(Lz)))
+#     Ly = inchol(Y, ky, tol = tol)
+#     return(sum((t(Ly)%*%Lz%*%solve(dim(Y)[1]*eps*diag(dim(Lz)[2]) + t(Lz)%*%Lz)%*%t(Lz))^2))
+#   }
+#   L1 = inchol(X, kx, tol = tol)
+#   L2 = inchol(cbind(X,Z), kxz, tol = tol)
+#   L3 = inchol(Y, ky, tol = tol)
+#   L1 = L1 - rep(colMeans(L1), rep.int(n, ncol(L1)))
+#   L2 = L2 - rep(colMeans(L2), rep.int(n, ncol(L2)))
+#   L3 = L3 - rep(colMeans(L3), rep.int(n, ncol(L3)))
+#   M = - L1%*%solve(n*eps*diag(dim(L1)[2]) + t(L1)%*%L1)%*%t(L1) + L2%*%solve(n*eps*diag(dim(L2)[2]) + t(L2)%*%L2)%*%t(L2)
+#   numerator = sum((M%*%L3)^2)
+#   return(numerator)
+# }
+
+
 
 #' \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) with geometric graphs.
 #'
