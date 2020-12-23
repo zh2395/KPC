@@ -2,7 +2,7 @@
 % Please edit documentation in R/KPC.R
 \name{TnKnn}
 \alias{TnKnn}
-\title{\eqn{T_n} with geometric graphs}
+\title{Tn with geometric graphs}
 \usage{
 TnKnn(Y, X, k, Knn = 1)
 }
@@ -19,9 +19,9 @@ TnKnn(Y, X, k, Knn = 1)
 The algorithm returns a real number which is the value of Tn.
 }
 \description{
-Calculate \eqn{T_n} using directed K-nn graph or minimum spanning tree (MST).
+Calculate \eqn{T_n} using directed K-NN graph or minimum spanning tree (MST).
 }
 \details{
 \eqn{T_n} is an estimate of \eqn{E[E[k(Y_1,Y_1')|X]]}, with \eqn{Y_1}, \eqn{Y_1'} drawn iid from \eqn{Y|X}, given \eqn{X}.
-For K-nn graph, ties will be broken at random. Algorithm finding the MST is implemented the package \code{emstreeR}.
+For K-NN graph, ties will be broken at random. Algorithm finding the MST is implemented the package \code{emstreeR}.
 }

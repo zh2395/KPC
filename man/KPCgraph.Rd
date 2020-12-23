@@ -38,7 +38,7 @@ between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y,
 It converges to the population quantity (depending on the kernel) which is between 0 and 1.
 A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 a large value indicates stronger conditional dependence.
-If \code{X == NULL}, it returns the \code{Kmac(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
+If \code{X == NULL}, it returns the \code{KMAc(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 }
 \examples{
 library(kernlab)
@@ -55,5 +55,5 @@ y = (x + z) \%\% 1
 KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=TRUE)
 }
 \seealso{
-\code{\link{KPCRKHS}}, \code{\link{Kmac}}, \code{\link{Klin}}
+\code{\link{KPCRKHS}}, \code{\link{KMAc}}, \code{\link{Klin}}
 }

@@ -1,9 +1,9 @@
-#' \eqn{T_n} with geometric graphs
+#' Tn with geometric graphs
 #'
-#' Calculate \eqn{T_n} using directed K-nn graph or minimum spanning tree (MST).
+#' Calculate \eqn{T_n} using directed K-NN graph or minimum spanning tree (MST).
 #'
 #' \eqn{T_n} is an estimate of \eqn{E[E[k(Y_1,Y_1')|X]]}, with \eqn{Y_1}, \eqn{Y_1'} drawn iid from \eqn{Y|X}, given \eqn{X}.
-#' For K-nn graph, ties will be broken at random. Algorithm finding the MST is implemented the package \code{emstreeR}.
+#' For K-NN graph, ties will be broken at random. Algorithm finding the MST is implemented the package \code{emstreeR}.
 #'
 #' @param X a matrix of predictors (n by dx)
 #' @param Y a matrix of response (n by dy)
@@ -142,7 +142,7 @@ TnMST = function(Y,X,k) {
 #' It converges to the population quantity (depending on the kernel) which is between 0 and 1.
 #' A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 #' a large value indicates stronger conditional dependence.
-#' If \code{X == NULL}, it returns the \code{Kmac(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
+#' If \code{X == NULL}, it returns the \code{KMAc(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 #'
 #' @param Y a matrix (n by dy)
 #' @param X a matrix (n by dx) or \code{NULL} if \eqn{X} is empty
@@ -155,7 +155,7 @@ TnMST = function(Y,X,k) {
 #' @export
 #' @return The algorithm returns a real number which is the estimated KPC.
 #'
-#' @seealso \code{\link{KPCRKHS}}, \code{\link{Kmac}}, \code{\link{Klin}}
+#' @seealso \code{\link{KPCRKHS}}, \code{\link{KMAc}}, \code{\link{Klin}}
 #'
 #' @examples
 #' library(kernlab)
@@ -171,7 +171,7 @@ TnMST = function(Y,X,k) {
 #' y = (x + z) %% 1
 #' KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=TRUE)
 KPCgraph = function(Y, X, Z, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2)), Knn = 1, trans_inv = FALSE) {
-  if (is.null(X)) return(Kmac(Y,Z,k,Knn))
+  if (is.null(X)) return(KMAc(Y,Z,k,Knn))
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if (!is.matrix(X)) X = as.matrix(X)
   if (!is.matrix(Z)) Z = as.matrix(Z)
@@ -353,7 +353,7 @@ KPCRKHSlinear = function(Y, X = NULL, Z, eps = 1e-3) {
 
 #' Kernel Feature Ordering by Conditional Independence
 #'
-#' Variable selection with KPC using directed K-nn graph or minimum spanning tree (MST)
+#' Variable selection with KPC using directed K-NN graph or minimum spanning tree (MST)
 #'
 #' A stepwise forward selection of variables using KPC. At each step the \eqn{X_j} maximizing \eqn{\hat{\rho^2}(Y,X_j | selected X_i)} is selected.
 #' It is suggested to normalize the predictors before applying KFOCI.
@@ -582,29 +582,29 @@ KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, to
 }
 
 
-#' \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) with geometric graphs.
+#' KMAc (the unconditional version of graph-based KPC) with geometric graphs.
 #'
-#' Calculate \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) using directed K-nn graph or minimum spanning tree (MST).
+#' Calculate \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) using directed K-NN graph or minimum spanning tree (MST).
 #'
 #' \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
-#' For K-nn graph, ties will be broken at random. MST is found using package \code{emstreeR}.
+#' For K-NN graph, ties will be broken at random. MST is found using package \code{emstreeR}.
 #' In particular,
 #' \deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}},
-#' where \eqn{G_n} denotes a MST or K-nn graph on \eqn{X_1,\ldots , X_n}, \eqn{\mathcal{E}(G_n)} denotes the set of edges of \eqn{G_n} and
+#' where \eqn{G_n} denotes a MST or K-NN graph on \eqn{X_1,\ldots , X_n}, \eqn{\mathcal{E}(G_n)} denotes the set of edges of \eqn{G_n} and
 #' \eqn{(i,j)\in\mathcal{E}(G_n)} implies that there is an edge from \eqn{X_i} to \eqn{X_j} in \eqn{G_n}.
 #'
 #' @param Y a matrix of response (n by dy)
 #' @param X a matrix of predictors (n by dx)
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
-#' @return The algorithm returns a real number "kmac", the empirical kernel measure of association
+#' @return The algorithm returns a real number "KMAc", the empirical kernel measure of association
 #' @seealso \code{\link{KPCgraph}}, \code{\link{Klin}}
 #' @export
 #' @references Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.
 #' @examples
 #' library(kernlab)
-#' Kmac(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
-Kmac = function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2)), Knn = 1) {
+#' KMAc(Y = rnorm(100), X = rnorm(100), k = rbfdot(1), Knn = 1)
+KMAc = function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2)), Knn = 1) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if (!is.matrix(X)) X = as.matrix(X)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
@@ -619,13 +619,13 @@ Kmac = function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2))
   return((TnKnn(Y,X,k,Knn)-crosssum/(n*(n-1)))/(dirsum/n-crosssum/(n*(n-1))))
 }
 
-#' \eqn{\hat{\eta}_n^{\mbox{lin}}} with geometric graphs.
+#' A near linear time analogue of KMAc
 #'
-#' Calculate \eqn{\hat{\eta}_n^{\mbox{lin}}} (the unconditional version of graph-based KPC) using directed K-nn graph or minimum spanning tree (MST).
+#' Calculate \eqn{\hat{\eta}_n^{\mbox{lin}}} (the unconditional version of graph-based KPC) using directed K-NN graph or minimum spanning tree (MST).
 #' The computational complexity is O(nlog(n))
 #'
 #' \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
-#' For K-nn graph, \eqn{\hat{\eta}_n} can be computed in near linear time (in \eqn{n}).
+#' For K-NN graph, \eqn{\hat{\eta}_n} can be computed in near linear time (in \eqn{n}).
 #' In particular,
 #' \deqn{\hat{\eta}_n^{\mbox{lin}}:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}},
 #' where all symbols have their usual meanings as in the definition of \eqn{\hat{\eta}_n}.
@@ -634,9 +634,9 @@ Kmac = function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2))
 #' @param X a matrix of predictors (n by dx)
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
-#' @return The algorithm returns a real number "klin": an empirical kernel measure of association which can be computed in near linear time when K-nn graphs are used.
+#' @return The algorithm returns a real number "klin": an empirical kernel measure of association which can be computed in near linear time when K-NN graphs are used.
 #' @export
-#' @seealso \code{\link{KPCgraph}}, \code{\link{Kmac}}
+#' @seealso \code{\link{KPCgraph}}, \code{\link{KMAc}}
 #' @references Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.
 #' @examples
 #' library(kernlab)

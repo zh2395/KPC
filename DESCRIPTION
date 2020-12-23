@@ -28,7 +28,7 @@ Description: Kernel partial correlation (KPC) coefficient measures the strength 
     measures the unconditional dependence between Y and Z, which is also implemented in the
     package. The unconditional graph-based estimator has been described in Deb, N., P. Ghosal,
     and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric
-    graphs” <arXiv:2010.01768>. It is implemented in the functions 'Kmac' and 'Klin' in this
+    graphs” <arXiv:2010.01768>. It is implemented in the functions 'KMAc' and 'Klin' in this
     package. The latter can be computed in near linear time.
 License: GPL-3
 Encoding: UTF-8
