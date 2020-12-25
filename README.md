@@ -262,10 +262,10 @@ k1 = function(a,b) return(1/prod(a+b+1))
 k2 = function(a,b) return(exp(-sum(sqrt(a+b))))
 class(k1) = class(k2) = "kernel"
 
-KFOCI(Y, X, k1, Knn=3, numCores = 1)
-# 2 1 4 3
-KFOCI(Y, X, k2, Knn=5, numCores = 1)
-# 1 2 4
+KFOCI(Y, X, k1, Knn=4, numCores = 1)
+# 1 2 4 3
+KFOCI(Y, X, k2, Knn=4, numCores = 1)
+# 1 2 4 3
 
 KPCgraph(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y)^2))),Knn = 2,trans_inv=TRUE)
 # 0.1543532
