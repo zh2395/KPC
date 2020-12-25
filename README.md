@@ -250,6 +250,8 @@ for (i in 1:n) {
 }
 X = ElecData[5*(1:n),4:7]
 for (i in 1:4) X[,i] = (X[,i] - mean(X[,i]))/sd(X[,i]) # normalize the data
+set.seed(1)
+X[,5:8] = rnorm(n*4)
 
 library(kernlab)
 KFOCI(Y, X, rbfdot(1/(2*median(dist(Y)^2))), Knn=1, numCores = 1)
