@@ -204,7 +204,7 @@ KPCgraph = function(Y, X, Z, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(
 #
 # @param M Matrix (n by n)
 double_center = function(M){
-  return(M - rowMeans(M) - matrix(colMeans(M),nrow(M),ncol(M),byrow = T) + mean(M))
+  return(M - rowMeans(M) - rep(colMeans(M), rep.int(nrow(M), ncol(M))) + mean(M))
 }
 
 #' Kernel partial correlation with RKHS method
@@ -239,10 +239,10 @@ double_center = function(M){
 #' y = x + z + rnorm(n,1,1)
 #' library(kernlab)
 #' k = vanilladot()
-#' KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = FALSE)
-#' # 0.4855134 (Population quantity = 0.5)
-#' KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = TRUE, tol = 1e-5)
-#' # 0.4855134 (Population quantity = 0.5)
+#' KPCRKHS(y, x, z, k, k, k, 1e-3/n^(0.4), appro = FALSE)
+#' # 0.4854383 (Population quantity = 0.5)
+#' KPCRKHS(y, x, z, k, k, k, 1e-3/n^(0.4), appro = TRUE, tol = 1e-5)
+#' # 0.4854383 (Population quantity = 0.5)
 KPCRKHS = function(Y, X = NULL, Z, ky = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2)), kx = kernlab::rbfdot(1/(2*stats::median(stats::dist(X))^2)), kxz = kernlab::rbfdot(1/(2*stats::median(stats::dist(cbind(X,Z)))^2)), eps = 1e-3, appro = FALSE, tol = 1e-5) {
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if (!is.null(X)) {
@@ -280,65 +280,6 @@ KPCRKHS = function(Y, X = NULL, Z, ky = kernlab::rbfdot(1/(2*stats::median(stats
   L1 = inchol(X, kx, tol = tol)
   L2 = inchol(cbind(X,Z), kxz, tol = tol)
   L3 = inchol(Y, ky, tol = tol)
-  L1 = L1 - rep(colMeans(L1), rep.int(n, ncol(L1)))
-  L2 = L2 - rep(colMeans(L2), rep.int(n, ncol(L2)))
-  L3 = L3 - rep(colMeans(L3), rep.int(n, ncol(L3)))
-  N = diag(n) - L1%*%solve(n*eps*diag(dim(L1)[2]) + t(L1)%*%L1)%*%t(L1)
-  denominator = sum((N%*%L3)^2)
-  M = N - diag(n) + L2%*%solve(n*eps*diag(dim(L2)[2]) + t(L2)%*%L2)%*%t(L2)
-  numerator = sum((M%*%L3)^2)
-  return(numerator/denominator)
-}
-
-#' Kernel partial correlation with RKHS method using linear kernels
-#'
-#' Linear kernels are used for ky, kx, kxz in KPCRKHS, in which case the incomplete Cholesky decomposition is the data matrix itself and could speed up the computation to a great extent.
-#'
-#' Linear kernels are used for ky, kx, kxz in KPCRKHS.
-#' The kernel partial correlation (KPC) coefficient measures the conditional dependence
-#' between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
-#' It converges to the population quantity which is between 0 and 1.
-#' A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
-#' a large value indicates stronger conditional dependence.
-#' If \code{X = NULL}, it measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
-#'
-#' @param Y a matrix (n by dy)
-#' @param Z a matrix (n by dz)
-#' @param X a matrix (n by dx) or \code{NULL} if \eqn{X} is empty
-#' @param eps a small regularization parameter for inverting the empirical cross-covariance operator
-#' @seealso \code{\link{KPCRKHS}}
-#' @export
-#' @return The algorithm returns a real number which is the estimated KPC (with linear kernel).
-#' @examples
-#' n = 2000
-#' x = rnorm(n)
-#' z = rnorm(n)
-#' y = x + z + rnorm(n,1,1)
-#' KPCRKHSlinear(y, x, z, 1e-5/n^(0.4))
-KPCRKHSlinear = function(Y, X = NULL, Z, eps = 1e-3) {
-  if (!is.matrix(Y)) Y = as.matrix(Y)
-  if (!is.null(X)) {
-    if (!is.matrix(X)) X = as.matrix(X)
-    if ((nrow(Y) != nrow(X))) stop("Number of rows of the inputs should be equal.")
-  }
-  if (!is.matrix(Z)) Z = as.matrix(Z)
-  if ((nrow(Y) != nrow(Z))) stop("Number of rows of the inputs should be equal.")
-
-  n = dim(Y)[1]
-
-  # Incomplete Cholesky decomposition is exact here
-  if (is.null(X)) {
-    Lz = Z
-    Lz = Lz - rep(colMeans(Lz), rep.int(n, ncol(Lz)))
-    Ly = Y
-    tilde_Ly = Ly - rep(colMeans(Ly), rep.int(n, ncol(Ly)))
-    norm_sq = function(x) return(sum(x^2))
-    denominator = sum(apply(tilde_Ly, 1, norm_sq))
-    return(sum((t(Ly)%*%Lz%*%solve(dim(Y)[1]*eps*diag(dim(Lz)[2]) + t(Lz)%*%Lz)%*%t(Lz))^2)/denominator)
-  }
-  L1 = X
-  L2 = cbind(X,Z)
-  L3 = Y
   L1 = L1 - rep(colMeans(L1), rep.int(n, ncol(L1)))
   L2 = L2 - rep(colMeans(L2), rep.int(n, ncol(L2)))
   L3 = L3 - rep(colMeans(L3), rep.int(n, ncol(L3)))

@@ -56,17 +56,17 @@ measures the unconditional association between Y and Z; `Z`: a matrix of n rows;
 `tol`: tolerance used for incomplete Cholesky decomposition (implemented by the function `inchol` in the package `kernlab`).
 
 ``` r
-n = 2000
+n = 1000
 set.seed(1)
 x = rnorm(n)
 z = rnorm(n)
 y = x + z + rnorm(n,1,1)
 library(kernlab)
 k = vanilladot() # linear kernel
-KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = F)
-# 0.4859424 (Population quantity = 0.5)
-KPCRKHS(y, x, z, k, k, k, 1e-5/n^(0.4), appro = T, tol = 1e-5)
-# 0.4859424 (Population quantity = 0.5)
+KPCRKHS(y, x, z, k, k, k, 1e-3/n^(0.4), appro = F)
+# 0.5158324 (Population quantity = 0.5)
+KPCRKHS(y, x, z, k, k, k, 1e-3/n^(0.4), appro = T, tol = 1e-5)
+# 0.5158324 (Population quantity = 0.5)
 ```
 
 `KFOCI` implements variable selection with KPC using directed Knn graph or MST.
@@ -128,23 +128,6 @@ RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, nu
 kS = function(X,S) return(rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2)))
 RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
 # 1 2 3
-```
-
-`KPCRKHSlinear` is the RKHS based KPC estimator when `ky`, `kx`, `kxz` are all linear kernels,
-in which case the incomplete Cholesky decomposition is the data matrix itself and could speed up the computation to a great extent.
-It is included here for reproducing the results in the paper.
-``` r
-n = 2000
-set.seed(1)
-x = rnorm(n)
-z = rnorm(n)
-y = x + z + rnorm(n,1,1)
-KPCRKHSlinear(y, x, z, 1e-5/n^(0.4))
-# 0.4859424
-# Theoretical KPC is 0.5
-# compared with classical partial correlation squared:
-# ppcor::pcor.test(y, z, x)$estimate^2 
-# 0.4859424
 ```
 
 ## Real data example

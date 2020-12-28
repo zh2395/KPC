@@ -3,7 +3,6 @@
 export(KFOCI)
 export(KMAc)
 export(KPCRKHS)
-export(KPCRKHSlinear)
 export(KPCgraph)
 export(Klin)
 export(RKHS_select)
