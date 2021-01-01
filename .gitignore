@@ -7,3 +7,4 @@ medical.csv
 KPC_simulation.RData
 KPC.Rproj
 .DS_Store
+.gitignore
