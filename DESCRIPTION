@@ -25,13 +25,12 @@ Description: Kernel partial correlation (KPC) coefficient measures the strength 
     (using the graph based estimator of KPC), as well as a similar stepwise forward selection
     algorithm based on the RKHS based estimator. For more details on KPC, its empirical estimators
     and its application on variable selection, see Huang, Z., N. Deb, and B. Sen (2020). “Kernel
-    partial correlation coefficient – a measure of conditional dependence" <arXiv:2012.14804>
-    https://arxiv.org/abs/2012.14804. When X is empty, KPC measures the unconditional dependence
-    between Y and Z, which is also implemented in the package. The unconditional graph-based
-    estimator has been described in Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association
-    on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>. It is 
-    implemented in the functions 'KMAc' and 'Klin' in this package. The latter can be computed
-    in near linear time.
+    partial correlation coefficient – a measure of conditional dependence" <arXiv:2012.14804>.
+    When X is empty, KPC measures the unconditional dependence between Y and Z, which is also
+    implemented in the package. The unconditional graph-based estimator has been described in
+    Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using
+    kernels and geometric graphs” <arXiv:2010.01768>. It is implemented in the functions 'KMAc'
+    and 'Klin' in this package. The latter can be computed in near linear time.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
