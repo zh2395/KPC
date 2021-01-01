@@ -74,12 +74,12 @@ The inputs are
 `Y` : a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx); 
 `k`: the kernel function used for Y;
-`Knn`: the number of nearest neighbors, or "MST".
+`Knn`: the number of nearest neighbors, or "MST";
 `num_features`: the number of variables to be selected (which cannot be larger than dx). The default value of `num_features` is `NULL` and in that
-case it will be set equal to dx. 
-`stop`: If `stop == TRUE`, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till `num_features` many variables are selected. If `stop == FALSE` then exactly `num_features` many variables are selected. 
-`numCores`: number of cores that are going to be used for parallelizing the process.
-`verbose`: whether to print each selected variables during the forward stepwise algorithm (default `FALSE`).
+case it will be set equal to dx;
+`stop`: If `stop == TRUE`, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till `num_features` many variables are selected. If `stop == FALSE` then exactly `num_features` many variables are selected; 
+`numCores`: number of cores that are going to be used for parallelizing the process;
+`verbose`: whether to print each selected variables during the forward stepwise algorithm (default `FALSE`);
 
 It is suggested to normalize the predictors before applying `KFOCI`. `KFOCI` returns a vector of the indices, from 1,...,dx, of the selected variables.
 
@@ -106,11 +106,11 @@ The inputs are:
 `Y`: a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx);
 `num_features`: the number of variables to be selected, cannot be larger than dx;
-`ky`: the kernel function for Y.
-`kS`: a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer.
+`ky`: the kernel function for Y;
+`kS`: a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer. If `kS == NULL`, Gaussian kernel with empitical bandwidth will be used, i.e., `kernlab::rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2))`;
 `eps`: a positive number, the regularization parameter for RKHS based KPC estimator;
 `appro` whether to use incomplete Cholesky decomposition for approximation;
-`tol`: tolerance used for incomplete Cholesky decomposition (implemented by `inchol` in package `kernlab`).
+`tol`: tolerance used for incomplete Cholesky decomposition (implemented by `inchol` in package `kernlab`);
 `numCores`: number of cores that are going to be used for parallelizing the process;
 `verbose`: whether to print each selected variables during the forward stepwise algorithm
 
