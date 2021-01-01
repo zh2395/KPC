@@ -4,9 +4,9 @@
 # KPC
 Kernel partial correlation (KPC) coefficient measures the strength of conditional association between Y and Z given X, with X, Y, Z being random variables taking values in general topological spaces. As the name suggests, KPC is defined in terms of kernels on reproducing kernel Hilbert spaces (RKHSs). The population KPC is a deterministic number between 0 and 1; it is 0 if and only if Y is conditionally independent of Z given X, and it is 1 if and only if Y is a measurable function of Z and X. This R package provides implementations of two empirical versions of KPC when X, Z are Euclidean, and Y, possibly taking values in a general topological space, can be stored as a vector.
 
-One empirical KPC estimator is based on geometric graphs, such as K-nearest neighbor graphs (KNN) and minimum spanning trees (MST), and is consistent under very weak conditions. The other empirical estimator, defined using conditional mean embeddings (CMEs) as used in the RKHS literature, is also consistent under suitable conditions. Users are allowed to define arbitrary kernels (see examples below).
+One empirical KPC estimator is based on geometric graphs, such as K-nearest neighbor graphs (K-NN) and minimum spanning trees (MST), and is consistent under very weak conditions. The other empirical estimator, defined using conditional mean embeddings (CMEs) as used in the RKHS literature, is also consistent under suitable conditions. Users are allowed to define arbitrary kernels (see examples below).
 
-Using KPC we also provide a stepwise forward variable selection algorithm KFOCI (using the graph based estimator of KPC), as well as a similar stepwise forward selection algorithm based on the RKHS based estimator. For more details on KPC, its empirical estimators and its application on variable selection, see (link to the paper).
+Using KPC we also provide a stepwise forward variable selection algorithm KFOCI (using the graph based estimator of KPC), as well as a similar stepwise forward selection algorithm based on the RKHS based estimator. For more details on KPC, its empirical estimators and its application on variable selection, see https://arxiv.org/abs/2012.14804.
 
 When X is empty, KPC measures the unconditional dependence between Y and Z, which is also implemented in the package. The unconditional graph-based estimator has been described in *Deb, N., P. Ghosal, and B. Sen (2020). Measuring association on topological spaces using kernels and geometric graphs*. It is implemented in the functions `KMAc` and `Klin` in this package. The latter can be computed in near linear time. 
 
@@ -69,7 +69,7 @@ KPCRKHS(y, x, z, k, k, k, 1e-3/n^(0.4), appro = T, tol = 1e-5)
 # 0.5158324 (Population quantity = 0.5)
 ```
 
-`KFOCI` implements variable selection with KPC using directed Knn graph or MST.
+`KFOCI` implements variable selection with KPC using directed K-NN graph or MST.
 The inputs are 
 `Y` : a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx); 
