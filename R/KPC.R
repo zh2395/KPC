@@ -420,11 +420,11 @@ KFOCI <- function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 #' library(kernlab)
 #' kS = function(X,S) return(rbfdot(1/length(S)))
-#' RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
+#' KPCRKHS_VS(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
 #' kS = function(X,S) return(rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2)))
-#' RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
+#' KPCRKHS_VS(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-RKHS_select <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2)), kS = NULL, eps = 1e-3, appro = FALSE, tol = 1e-5, numCores = 1, verbose = FALSE){
+KPCRKHS_VS <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2)), kS = NULL, eps = 1e-3, appro = FALSE, tol = 1e-5, numCores = 1, verbose = FALSE){
   if (!is.matrix(X)) X = as.matrix(X)
   if (!is.matrix(Y)) Y = as.matrix(Y)
   if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")

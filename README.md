@@ -100,7 +100,7 @@ colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],kernlab::rbfdot(1/(2*median
 ```
 
 
-`RKHS_select` performs a forward stepwise variable selection using the RKHS based estimator of KPC.
+`KPCRKHS_VS` performs a forward stepwise variable selection using the RKHS based estimator of KPC.
 One needs to pre-specify the number of variables to be selected.
 The inputs are:
 `Y`: a matrix of responses (n by dy);
@@ -123,10 +123,10 @@ X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 library(kernlab)
 kS = function(X,S) return(rbfdot(1/length(S)))
-RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
+KPCRKHS_VS(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
 # 1 2 3
 kS = function(X,S) return(rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2)))
-RKHS_select(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
+KPCRKHS_VS(Y, X, num_features = 3, rbfdot(1), kS, eps = 1e-3, appro = FALSE, numCores = 1)
 # 1 2 3
 ```
 
