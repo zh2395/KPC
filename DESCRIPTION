@@ -13,22 +13,21 @@ Description: Implementations of two empirical versions the kernel partial correl
     and the associated variable selection algorithms. KPC is a measure of the strength of conditional
     association between Y and Z given X, with X, Y, Z being random variables taking values in
     general topological spaces. As the name suggests, KPC is defined in terms of kernels on
-    reproducing kernel Hilbert spaces (RKHSs). Users are also allowed to define arbitrary kernels.
-    The population KPC is a deterministic number between 0 and 1; it is 0 if and only if Y is
-    conditionally independent of Z given X, and it is 1 if and only if Y is a measurable function
-    of Z and X. One empirical KPC estimator is based on geometric graphs, such as K-nearest
-    neighbor (K-NN) graphs and minimum spanning trees (MST), and is consistent under very weak
-    conditions. The other empirical estimator, defined using conditional mean embeddings (CMEs)
-    as used in the RKHS literature, is also consistent under suitable conditions. Using KPC, a
-    stepwise forward variable selection algorithm KFOCI (using the graph based estimator of KPC)
-    is provided, as well as a similar stepwise forward selection algorithm based on the RKHS based
-    estimator. For more details on KPC, its empirical estimators and its application on variable
-    selection, see Huang, Z., N. Deb, and B. Sen (2020). “Kernel partial correlation coefficient –
-    a measure of conditional dependence" <arXiv:2012.14804>. When X is empty, KPC measures
-    the unconditional dependence between Y and Z, which has been described in Deb, N., P. Ghosal,
-    and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric
-    graphs” <arXiv:2010.01768>, and it is implemented in the functions KMAc() and Klin() in this
-    package. The latter can be computed in near linear time.
+    reproducing kernel Hilbert spaces (RKHSs). The population KPC is a deterministic number
+    between 0 and 1; it is 0 if and only if Y is conditionally independent of Z given X, and it is 1 if
+    and only if Y is a measurable function of Z and X. One empirical KPC estimator is based on
+    geometric graphs, such as K-nearest neighbor graphs and minimum spanning trees, and is
+    consistent under very weak conditions. The other empirical estimator, defined using conditional
+    mean embeddings (CMEs) as used in the RKHS literature, is also consistent under suitable
+    conditions. Using KPC, a stepwise forward variable selection algorithm KFOCI (using the graph
+    based estimator of KPC) is provided, as well as a similar stepwise forward selection algorithm
+    based on the RKHS based estimator. For more details on KPC, its empirical estimators and its
+    application on variable selection, see Huang, Z., N. Deb, and B. Sen (2020). “Kernel partial
+    correlation coefficient – a measure of conditional dependence” <arXiv:2012.14804>. When X is
+    empty, KPC measures the unconditional dependence between Y and Z, which has been described
+    in Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using
+    kernels and geometric graphs” <arXiv:2010.01768>, and it is implemented in the functions
+    KMAc() and Klin() in this package. The latter can be computed in near linear time.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
