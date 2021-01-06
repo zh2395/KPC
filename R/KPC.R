@@ -135,7 +135,7 @@ TnMST = function(Y,X,k) {
 
 #' Kernel partial correlation with geometric graphs
 #'
-#' Calculate the kernel partial correlation (KPC) coefficient with directed Knn (nearest neighbor) graph or minimum spanning tree (MST).
+#' Calculate the kernel partial correlation (KPC) coefficient with directed K-nearest neighbor (K-NN) graph or minimum spanning tree (MST).
 #'
 #' The kernel partial correlation squared (KPC) measures the conditional dependence
 #' between \eqn{Y} and \eqn{Z} given \eqn{X}, based on an i.i.d. sample of \eqn{(Y, Z, X)}.
@@ -143,6 +143,7 @@ TnMST = function(Y,X,k) {
 #' A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 #' a large value indicates stronger conditional dependence.
 #' If \code{X == NULL}, it returns the \code{KMAc(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
+#' Euclidean distance is used for computing the K-NN graph and the MST.
 #'
 #' @param Y a matrix (n by dy)
 #' @param X a matrix (n by dx) or \code{NULL} if \eqn{X} is empty
@@ -170,6 +171,20 @@ TnMST = function(Y,X,k) {
 #' z = runif(n)
 #' y = (x + z) %% 1
 #' KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=TRUE)
+#'
+#' discrete_ker = function(y1,y2) {
+#'     if (y1 == y2) return(1)
+#'     return(0)
+#' }
+#' class(discrete_ker) <- "kernel"
+#' set.seed(1)
+#' n = 2000
+#' x = rnorm(n)
+#' z = rnorm(n)
+#' y = rep(0,n)
+#' for (i in 1:n) y[i] = sample(c(1,0),1,prob = c(exp(-z[i]^2/2),1-exp(-z[i]^2/2)))
+#' KPCgraph(y,x,z,discrete_ker,1)
+#' ##0.330413
 KPCgraph = function(Y, X, Z, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2)), Knn = 1, trans_inv = FALSE) {
   if (is.null(X)) return(KMAc(Y,Z,k,Knn))
   if (!is.matrix(Y)) Y = as.matrix(Y)
@@ -298,14 +313,15 @@ KPCRKHS = function(Y, X = NULL, Z, ky = kernlab::rbfdot(1/(2*stats::median(stats
 #'
 #' A stepwise forward selection of variables using KPC. At each step the \eqn{X_j} maximizing \eqn{\hat{\rho^2}(Y,X_j | selected X_i)} is selected.
 #' It is suggested to normalize the predictors before applying KFOCI.
+#' Euclidean distance is used for computing the K-NN graph and the MST.
 #'
 #' @param Y a matrix of responses (n by dy)
 #' @param X a matrix of predictors (n by dx)
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.
 #' @param Knn the number of nearest neighbor; or "MST"
 #' @param num_features the number of variables to be selected, cannot be larger than dx. The default value is NULL and in that
-#'   case it will be set equal to dx. If stop == TRUE (see below), then num_features is the maximal number of variables to be selected.
-#' @param stop If `stop == TRUE`, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till `num_features` many variables are selected. If `stop == FALSE` then exactly `num_features` many variables are selected.
+#'   case it will be set equal to dx. If \code{stop == TRUE} (see below), then num_features is the maximal number of variables to be selected.
+#' @param stop If \code{stop == TRUE}, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till \code{num_features} many variables are selected. If \code{stop == FALSE} then exactly \code{num_features} many variables are selected.
 #' @param numCores number of cores that are going to be used for parallelizing the process.
 #' @param verbose whether to print each selected variables during the forward stepwise algorithm
 #' @export
@@ -325,8 +341,7 @@ KPCRKHS = function(Y, X = NULL, Z, ky = kernlab::rbfdot(1/(2*stats::median(stats
 #' colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],ky,Knn=1)]
 #' #### "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 #'
-#' # This example may take several minutes on a personal computer.
-#' n = 2000
+#' n = 200
 #' p = 1000
 #' set.seed(1)
 #' X = matrix(rnorm(n * p), ncol = p)
@@ -530,15 +545,16 @@ KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, to
 #' \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
 #' For K-NN graph, ties will be broken at random. MST is found using package \code{emstreeR}.
 #' In particular,
-#' \deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}},
+#' \deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)},}
 #' where \eqn{G_n} denotes a MST or K-NN graph on \eqn{X_1,\ldots , X_n}, \eqn{\mathcal{E}(G_n)} denotes the set of edges of \eqn{G_n} and
 #' \eqn{(i,j)\in\mathcal{E}(G_n)} implies that there is an edge from \eqn{X_i} to \eqn{X_j} in \eqn{G_n}.
+#' Euclidean distance is used for computing the K-NN graph and the MST.
 #'
 #' @param Y a matrix of response (n by dy)
 #' @param X a matrix of predictors (n by dx)
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
-#' @return The algorithm returns a real number "KMAc", the empirical kernel measure of association
+#' @return The algorithm returns a real number `KMAc', the empirical kernel measure of association
 #' @seealso \code{\link{KPCgraph}}, \code{\link{Klin}}
 #' @export
 #' @references Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.
@@ -570,12 +586,13 @@ KMAc = function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2))
 #' In particular,
 #' \deqn{\hat{\eta}_n^{\mbox{lin}}:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}},
 #' where all symbols have their usual meanings as in the definition of \eqn{\hat{\eta}_n}.
+#' Euclidean distance is used for computing the K-NN graph and the MST.
 #'
 #' @param Y a matrix of response (n by dy)
 #' @param X a matrix of predictors (n by dx)
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}
 #' @param Knn the number of K-nearest neighbor to use; or "MST".
-#' @return The algorithm returns a real number "klin": an empirical kernel measure of association which can be computed in near linear time when K-NN graphs are used.
+#' @return The algorithm returns a real number `Klin': an empirical kernel measure of association which can be computed in near linear time when K-NN graphs are used.
 #' @export
 #' @seealso \code{\link{KPCgraph}}, \code{\link{KMAc}}
 #' @references Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using kernels and geometric graphs” <arXiv:2010.01768>.

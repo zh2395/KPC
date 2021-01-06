@@ -30,7 +30,7 @@ KPCgraph(
 The algorithm returns a real number which is the estimated KPC.
 }
 \description{
-Calculate the kernel partial correlation (KPC) coefficient with directed Knn (nearest neighbor) graph or minimum spanning tree (MST).
+Calculate the kernel partial correlation (KPC) coefficient with directed K-nearest neighbor (K-NN) graph or minimum spanning tree (MST).
 }
 \details{
 The kernel partial correlation squared (KPC) measures the conditional dependence
@@ -39,6 +39,7 @@ It converges to the population quantity (depending on the kernel) which is betwe
 A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} given \eqn{X}, and
 a large value indicates stronger conditional dependence.
 If \code{X == NULL}, it returns the \code{KMAc(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
+Euclidean distance is used for computing the K-NN graph and the MST.
 }
 \examples{
 library(kernlab)
@@ -53,6 +54,20 @@ x = runif(n)
 z = runif(n)
 y = (x + z) \%\% 1
 KPCgraph(y,x,z,rbfdot(5),Knn="MST",trans_inv=TRUE)
+
+discrete_ker = function(y1,y2) {
+    if (y1 == y2) return(1)
+    return(0)
+}
+class(discrete_ker) <- "kernel"
+set.seed(1)
+n = 2000
+x = rnorm(n)
+z = rnorm(n)
+y = rep(0,n)
+for (i in 1:n) y[i] = sample(c(1,0),1,prob = c(exp(-z[i]^2/2),1-exp(-z[i]^2/2)))
+KPCgraph(y,x,z,discrete_ker,1)
+##0.330413
 }
 \seealso{
 \code{\link{KPCRKHS}}, \code{\link{KMAc}}, \code{\link{Klin}}

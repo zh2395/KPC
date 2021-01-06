@@ -21,7 +21,7 @@ Klin(
 \item{Knn}{the number of K-nearest neighbor to use; or "MST".}
 }
 \value{
-The algorithm returns a real number "klin": an empirical kernel measure of association which can be computed in near linear time when K-NN graphs are used.
+The algorithm returns a real number `Klin': an empirical kernel measure of association which can be computed in near linear time when K-NN graphs are used.
 }
 \description{
 Calculate \eqn{\hat{\eta}_n^{\mbox{lin}}} (the unconditional version of graph-based KPC) using directed K-NN graph or minimum spanning tree (MST).
@@ -33,6 +33,7 @@ For K-NN graph, \eqn{\hat{\eta}_n} can be computed in near linear time (in \eqn{
 In particular,
 \deqn{\hat{\eta}_n^{\mbox{lin}}:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}},
 where all symbols have their usual meanings as in the definition of \eqn{\hat{\eta}_n}.
+Euclidean distance is used for computing the K-NN graph and the MST.
 }
 \examples{
 library(kernlab)

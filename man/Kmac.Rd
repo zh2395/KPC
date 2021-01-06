@@ -21,7 +21,7 @@ KMAc(
 \item{Knn}{the number of K-nearest neighbor to use; or "MST".}
 }
 \value{
-The algorithm returns a real number "KMAc", the empirical kernel measure of association
+The algorithm returns a real number `KMAc', the empirical kernel measure of association
 }
 \description{
 Calculate \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) using directed K-NN graph or minimum spanning tree (MST).
@@ -30,9 +30,10 @@ Calculate \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) usin
 \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
 For K-NN graph, ties will be broken at random. MST is found using package \code{emstreeR}.
 In particular,
-\deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}},
+\deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)},}
 where \eqn{G_n} denotes a MST or K-NN graph on \eqn{X_1,\ldots , X_n}, \eqn{\mathcal{E}(G_n)} denotes the set of edges of \eqn{G_n} and
 \eqn{(i,j)\in\mathcal{E}(G_n)} implies that there is an edge from \eqn{X_i} to \eqn{X_j} in \eqn{G_n}.
+Euclidean distance is used for computing the K-NN graph and the MST.
 }
 \examples{
 library(kernlab)
