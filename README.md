@@ -237,7 +237,7 @@ set.seed(1)
 X[,5:8] = rnorm(n*4)
 
 library(kernlab)
-KFOCI(Y, X, rbfdot(1/(2*median(dist(Y)^2))), Knn=1, numCores = 1)
+KFOCI(Y, X, rbfdot(1/(2*median(dist(Y))^2)), Knn=1, numCores = 1)
 # 1 2 3 4
 
 # define two kernels on histograms
@@ -250,14 +250,14 @@ KFOCI(Y, X, k1, Knn=4, numCores = 1)
 KFOCI(Y, X, k2, Knn=4, numCores = 1)
 # 1 2 4 3
 
-KPCgraph(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y)^2))),Knn = 2,trans_inv=TRUE)
+KPCgraph(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y))^2)),Knn = 2,trans_inv=TRUE)
 # 0.1543532
-KPCRKHS(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y)^2))),rbfdot(1/(2*median(dist(X[,c(2,3,4)])^2))), rbfdot(1/(2*median(dist(X)^2))), eps=1e-4, appro=F)
+KPCRKHS(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y))^2)),rbfdot(1/(2*median(dist(X[,c(2,3,4)]))^2)), rbfdot(1/(2*median(dist(X[,1:4]))^2)), eps=1e-4, appro=F)
 # 0.1473899
 
-KPCgraph(Y,X[,c(1,2,4)],X[,3],rbfdot(1/(2*median(dist(Y)^2))),Knn = 2,trans_inv=TRUE)
+KPCgraph(Y,X[,c(1,2,4)],X[,3],rbfdot(1/(2*median(dist(Y))^2)),Knn = 2,trans_inv=TRUE)
 # 0.05542749
-KPCRKHS(Y,X[,c(1,2,4)],X[,3],rbfdot(1/(2*median(dist(Y)^2))),rbfdot(1/(2*median(dist(X[,c(1,2,4)])^2))), rbfdot(1/(2*median(dist(X)^2))), eps=1e-4, appro=F)
+KPCRKHS(Y,X[,c(1,2,4)],X[,3],rbfdot(1/(2*median(dist(Y))^2)),rbfdot(1/(2*median(dist(X[,c(1,2,4)]))^2)), rbfdot(1/(2*median(dist(X[,1:4]))^2)), eps=1e-4, appro=F)
 # 0.06338199
 # X3 and X4 are both measures of richness. The conditional association between X3 and Y given all other variables is weaker than that of X1 and Y.
 ```
