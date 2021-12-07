@@ -12,7 +12,7 @@ When X is empty, KPC measures the unconditional dependence between Y and Z, whic
 
 ## Installation
 
-This package depends on R (>= 3.6.0). You can install the package KPC by (the package `devtools` needs to be installed first):
+This package depends on R (>= 4.0.0). You can install the package KPC by (the package `devtools` needs to be installed first):
 
 ``` r
 devtools::install_github("zh2395/KPC")

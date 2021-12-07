@@ -115,16 +115,22 @@ TnMST = function(Y,X,k) {
   }
 
   if (!is.data.frame(X)) X = as.data.frame(X)
+  # compute the Euclidean MST
+  out=mlpack::emst(X)$output
+  # (n-1) by 3 matrix
+  # the first and second columns correspond to "from" and "to" indices
+  # the index starts from 0
+  out[,1] = out[,1] + 1
+  out[,2] = out[,2] + 1
 
-  out=emstreeR::ComputeMST(X,verbose = FALSE)
   tmp = matrix(0,n,2)
   # the first column is the degree of node i
   # the second column is the sum of k(xi,x_{N(i)})
-  for (i in 1:(length(out$from)-1)) {
-    tmp[out$from[i],1] = tmp[out$from[i],1] + 1
-    tmp[out$to[i],1] = tmp[out$to[i],1] + 1
-    tmp[out$from[i],2] = tmp[out$from[i],2] + k(Y[out$to[i],],Y[out$from[i],])
-    tmp[out$to[i],2] = tmp[out$to[i],2] + k(Y[out$to[i],],Y[out$from[i],])
+  for (i in 1:(n-1)) {
+    tmp[out[i,1],1] = tmp[out[i,1],1] + 1
+    tmp[out[i,2],1] = tmp[out[i,2],1] + 1
+    tmp[out[i,1],2] = tmp[out[i,1],2] + k(Y[out[i,1],],Y[out[i,2],])
+    tmp[out[i,2],2] = tmp[out[i,2],2] + k(Y[out[i,2],],Y[out[i,1],])
   }
   return(mean(tmp[,2]/tmp[,1]))
 }
@@ -453,7 +459,21 @@ KPCRKHS_VS <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::medi
   index_select = rep(0, num_features)
   # select the first variable
   if (is.null(kS)) {
-    kS = function(X0,S) return(kernlab::rbfdot(1/(2*stats::median(stats::dist(X0[,S]))^2)))
+    kS = function(X0,S) {
+      distance_matrix = stats::dist(X0[,S])
+      bw = stats::median(distance_matrix)
+      if (bw > 0) {
+        return(kernlab::rbfdot(1/(2*bw^2)))
+      }
+      else {
+        warning("The median of pairwise distances is 0; use mean instead.")
+        bw = base::mean(distance_matrix)
+        if (bw == 0) {
+          stop("The mean of pairwise distances is 0---there exists a feature of constants.")
+        }
+        return(kernlab::rbfdot(1/(2*bw^2)))
+      }
+    }
   }
   estimateQFixedY <- function(id){
     return(KPCRKHS_numerator(Y,NULL,X[,id],ky,NULL,kS(X,id),eps,appro,tol))

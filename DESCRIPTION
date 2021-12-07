@@ -1,7 +1,7 @@
 Package: KPC
 Type: Package
 Title: Kernel Partial Correlation Coefficient
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(person("Zhen", "Huang", email = "zh2395@columbia.edu",
     role = c("aut", "cre")),
     person("Nabarun", "Deb", email = "nd2560@columbia.edu",
@@ -32,5 +32,5 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
-Depends: R (>= 3.6.0), data.table, kernlab
-Imports: RANN, proxy, parallel, gmp, emstreeR
+Depends: R (>= 4.0.0), data.table, kernlab
+Imports: RANN, proxy, parallel, gmp, mlpack
