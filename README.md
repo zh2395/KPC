@@ -1,6 +1,3 @@
-<!-- badges: start -->
-[![Travis build status](https://api.travis-ci.org/zh2395/KPC.svg?branch=main)](https://travis-ci.com/zh2395/KPC)
-<!-- badges: end -->
 # KPC
 Kernel partial correlation (KPC) coefficient measures the strength of conditional association between Y and Z given X, with X, Y, Z being random variables taking values in general topological spaces. As the name suggests, KPC is defined in terms of kernels on reproducing kernel Hilbert spaces (RKHSs). The population KPC is a deterministic number between 0 and 1; it is 0 if and only if Y is conditionally independent of Z given X, and it is 1 if and only if Y is a measurable function of Z and X. This R package provides implementations of two empirical versions of KPC when X, Z are Euclidean, and Y, possibly taking values in a general topological space, can be stored as a vector.
 
