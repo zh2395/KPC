@@ -16,9 +16,9 @@ KMAc(
 
 \item{X}{a matrix of predictors (n by dx)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g., Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}}
 
-\item{Knn}{the number of K-nearest neighbor to use; or "MST".}
+\item{Knn}{the number of K-nearest neighbor to use; or "MST". A small Knn (e.g., Knn=1) is recommended for an accurate estimate of the population KMAc.}
 }
 \value{
 The algorithm returns a real number `KMAc', the empirical kernel measure of association

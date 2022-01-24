@@ -18,7 +18,7 @@ Klin(
 
 \item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. \code{rbfdot(sigma = 1)}, \code{vanilladot()}}
 
-\item{Knn}{the number of K-nearest neighbor to use; or "MST".}
+\item{Knn}{the number of K-nearest neighbor to use; or "MST". A small Knn (e.g., Knn=1) is recommended.}
 }
 \value{
 The algorithm returns a real number `Klin': an empirical kernel measure of association which can be computed in near linear time when K-NN graphs are used.

@@ -29,8 +29,9 @@ The inputs are:
 `Y`: a matrix of n rows;
 `X`: a matrix of n rows, or NULL if X is empty, in which case it will return `KMAc(Y,Z,k,Knn)`, which measures the unconditional dependence between Y and Z.
 `Z`: a matrix of n rows;
-`k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g. Gaussian kernel `rbfdot(sigma = 1)`, linear kernel `vanilladot()`; In practice, Gaussian kernel with empirical bandwidth `kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2))` may be a good choice.
-`Knn`: the number of nearest neighbors to use, or "MST"; `trans_inv`: whether k(y, y) is free of y.
+`k`: a function of class kernel. It can be the kernel implemented in `kernlab` e.g., Gaussian kernel `rbfdot(sigma = 1)`, linear kernel `vanilladot()`; In practice, Gaussian kernel with empirical bandwidth `kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2))` may be a good choice.
+`Knn`: a positive integer indicating the number of nearest neighbor to use; or "MST". A small Knn (e.g., Knn=1) is recommended for an accurate estimate of the population KPC.
+`trans_inv`: whether k(y, y) is free of y.
 
 ``` r
 library(kernlab)
@@ -71,14 +72,14 @@ The inputs are
 `Y` : a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx); 
 `k`: the kernel function used for Y;
-`Knn`: the number of nearest neighbors, or "MST";
+`Knn`: a positive integer indicating the number of nearest neighbor; or "MST". The suggested choice of Knn is 0.05n for samples up to a few hundred observations. For large n, the suggested Knn is sublinear in n. That is, it may grow slower than any linear function of n. The computing time is approximately linear in Knn. A smaller Knn takes less time.
 `num_features`: the number of variables to be selected (which cannot be larger than dx). The default value of `num_features` is `NULL` and in that
 case it will be set equal to dx;
 `stop`: If `stop == TRUE`, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till `num_features` many variables are selected. If `stop == FALSE` then exactly `num_features` many variables are selected; 
 `numCores`: number of cores that are going to be used for parallelizing the process;
 `verbose`: whether to print each selected variables during the forward stepwise algorithm (default `FALSE`);
 
-It is suggested to normalize the predictors before applying `KFOCI`. `KFOCI` returns a vector of the indices, from 1,...,dx, of the selected variables.
+It is suggested to normalize the predictors before applying `KFOCI`. `KFOCI` returns a vector of the indices, from 1,...,dx, of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
 
 ``` r
 n = 200
@@ -111,7 +112,7 @@ The inputs are:
 `numCores`: number of cores that are going to be used for parallelizing the process;
 `verbose`: whether to print each selected variables during the forward stepwise algorithm
 
-The algorithm returns a vector of the indices from 1,...,dx of the selected variables
+The algorithm returns a vector of the indices from 1,...,dx of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
 ``` r
 n = 200
 p = 100

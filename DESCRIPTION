@@ -1,7 +1,7 @@
 Package: KPC
 Type: Package
 Title: Kernel Partial Correlation Coefficient
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(person("Zhen", "Huang", email = "zh2395@columbia.edu",
     role = c("aut", "cre")),
     person("Nabarun", "Deb", email = "nd2560@columbia.edu",

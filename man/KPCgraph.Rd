@@ -20,9 +20,9 @@ KPCgraph(
 
 \item{Z}{a matrix (n by dz)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g., Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.}
 
-\item{Knn}{number of nearest neighbor to use; or "MST"}
+\item{Knn}{a positive integer indicating the number of nearest neighbor to use; or "MST". A small Knn (e.g., Knn=1) is recommended for an accurate estimate of the population KPC.}
 
 \item{trans_inv}{TRUE or FALSE. Is \eqn{k(y, y)} free of \eqn{y}?}
 }
@@ -40,6 +40,8 @@ A small value indicates low conditional dependence between \eqn{Y} and \eqn{Z} g
 a large value indicates stronger conditional dependence.
 If \code{X == NULL}, it returns the \code{KMAc(Y,Z,k,Knn)}, which measures the unconditional dependence between \eqn{Y} and \eqn{Z}.
 Euclidean distance is used for computing the K-NN graph and the MST.
+MST in practice often achieves similar performance as the 2-NN graph. A small K is recommended for the K-NN graph for an accurate estimate of the population KPC,
+while if KPC is used as a test statistic for conditional independence, a larger K can be beneficial.
 }
 \examples{
 library(kernlab)

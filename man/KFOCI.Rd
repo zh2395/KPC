@@ -8,10 +8,10 @@ KFOCI(
   Y,
   X,
   k = kernlab::rbfdot(1/(2 * stats::median(stats::dist(Y))^2)),
-  Knn = 1,
+  Knn = min(ceiling(NROW(Y)/20), 20),
   num_features = NULL,
   stop = TRUE,
-  numCores = 1,
+  numCores = parallel::detectCores(),
   verbose = FALSE
 )
 }
@@ -20,9 +20,9 @@ KFOCI(
 
 \item{X}{a matrix of predictors (n by dx)}
 
-\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g. Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.}
+\item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g., Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.}
 
-\item{Knn}{the number of nearest neighbor; or "MST"}
+\item{Knn}{a positive integer indicating the number of nearest neighbor; or "MST". The suggested choice of Knn is 0.05n for samples up to a few hundred observations. For large n, the suggested Knn is sublinear in n. That is, it may grow slower than any linear function of n. The computing time is approximately linear in Knn. A smaller Knn takes less time.}
 
 \item{num_features}{the number of variables to be selected, cannot be larger than dx. The default value is NULL and in that
 case it will be set equal to dx. If \code{stop == TRUE} (see below), then num_features is the maximal number of variables to be selected.}
@@ -34,7 +34,7 @@ case it will be set equal to dx. If \code{stop == TRUE} (see below), then num_fe
 \item{verbose}{whether to print each selected variables during the forward stepwise algorithm}
 }
 \value{
-The algorithm returns a vector of the indices from 1,...,dx of the selected variables
+The algorithm returns a vector of the indices from 1,...,dx of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
 }
 \description{
 Variable selection with KPC using directed K-NN graph or minimum spanning tree (MST)
@@ -50,23 +50,8 @@ p = 10
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
 KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores=1)
-\dontrun{
-### install the package olsrr first
-surgical = olsrr::surgical
-for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
-ky = kernlab::rbfdot(1/(2*stats::median(stats::dist(surgical$y))^2))
-colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],ky,Knn=1)]
-#### "enzyme_test" "pindex" "liver_test"  "alc_heavy"
-
-n = 200
-p = 1000
-set.seed(1)
-X = matrix(rnorm(n * p), ncol = p)
-Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 7, verbose=TRUE)
 # 1 2 3
 }
-}
 \seealso{
-\code{\link{KPCgraph}}, \code{\link{KPCRKHS}}
+\code{\link{KPCgraph}}, \code{\link{KPCRKHS}}, \code{\link{KPCRKHS_VS}}
 }
