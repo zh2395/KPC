@@ -40,7 +40,8 @@ The algorithm returns a vector of the indices from 1,...,dx of the selected vari
 Variable selection with KPC using directed K-NN graph or minimum spanning tree (MST)
 }
 \details{
-A stepwise forward selection of variables using KPC. At each step the \eqn{X_j} maximizing \eqn{\hat{\rho^2}(Y,X_j | selected X_i)} is selected.
+A stepwise forward selection of variables using KPC. At each step it selects the \eqn{X_j} that maximizes
+\eqn{\hat{\rho^2}(Y,X_j |}selected \eqn{X_i)}.
 It is suggested to normalize the predictors before applying KFOCI.
 Euclidean distance is used for computing the K-NN graph and the MST.
 }

@@ -26,7 +26,7 @@ KPCRKHS_VS(
 
 \item{ky}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g., Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}}
 
-\item{kS}{a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer. If \code{kS == NULL}, Gaussian kernel with empitical bandwidth will be used, i.e., \code{kernlab::rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2))}}
+\item{kS}{a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer. If \code{kS == NULL}, Gaussian kernel with empitical bandwidth \code{kernlab::rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2))} will be used.}
 
 \item{eps}{a positive number; the regularization parameter for the RKHS estimator}
 
@@ -45,7 +45,7 @@ The algorithm returns a vector of the indices from \code{1,...,dx} of the select
 The algorithm performs a forward stepwise variable selection using RKHS estimators.
 }
 \details{
-A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\tilde{\rho^2}(Y,X_j | selected X_i)} is selected.
+A stepwise forward selection of variables using KPC. At each step it selects the \eqn{X_j} that maximizes \eqn{\tilde{\rho^2}(Y,X_j |}selected \eqn{X_i)}.
 It is suggested to normalize the features before applying the algorithm.
 }
 \examples{

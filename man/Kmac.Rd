@@ -27,7 +27,7 @@ The algorithm returns a real number `KMAc', the empirical kernel measure of asso
 Calculate \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) using directed K-NN graph or minimum spanning tree (MST).
 }
 \details{
-\eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
+\eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{\{(X_i,Y_i)\}_{i=1}^n} from \eqn{\mu}.
 For K-NN graph, ties will be broken at random. MST is found using package \code{emstreeR}.
 In particular,
 \deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)},}

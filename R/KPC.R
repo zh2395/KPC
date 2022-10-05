@@ -319,7 +319,8 @@ KPCRKHS = function(Y, X = NULL, Z, ky = kernlab::rbfdot(1/(2*stats::median(stats
 #'
 #' Variable selection with KPC using directed K-NN graph or minimum spanning tree (MST)
 #'
-#' A stepwise forward selection of variables using KPC. At each step the \eqn{X_j} maximizing \eqn{\hat{\rho^2}(Y,X_j | selected X_i)} is selected.
+#' A stepwise forward selection of variables using KPC. At each step it selects the \eqn{X_j} that maximizes
+#' \eqn{\hat{\rho^2}(Y,X_j |}selected \eqn{X_i)}.
 #' It is suggested to normalize the predictors before applying KFOCI.
 #' Euclidean distance is used for computing the K-NN graph and the MST.
 #'
@@ -405,13 +406,13 @@ KFOCI <- function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2
 #'
 #' The algorithm performs a forward stepwise variable selection using RKHS estimators.
 #'
-#' A stepwise forward selection of variables using KPC. At each step the \eqn{Xj} maximizing \eqn{\tilde{\rho^2}(Y,X_j | selected X_i)} is selected.
+#' A stepwise forward selection of variables using KPC. At each step it selects the \eqn{X_j} that maximizes \eqn{\tilde{\rho^2}(Y,X_j |}selected \eqn{X_i)}.
 #' It is suggested to normalize the features before applying the algorithm.
 #'
 #' @param Y a matrix of responses (n by dy)
 #' @param X a matrix of predictors (n by dx)
 #' @param ky a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g., Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}
-#' @param kS a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer. If \code{kS == NULL}, Gaussian kernel with empitical bandwidth will be used, i.e., \code{kernlab::rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2))}
+#' @param kS a function that takes X and a subset of indices S as inputs, and then outputs the kernel for X_S. The first argument of kS is X, and the second argument is a vector of positive integer. If \code{kS == NULL}, Gaussian kernel with empitical bandwidth \code{kernlab::rbfdot(1/(2*stats::median(stats::dist(X[,S]))^2))} will be used.
 #' @param num_features the number of variables to be selected, cannot be larger than dx.
 #' @param eps a positive number; the regularization parameter for the RKHS estimator
 #' @param appro whether to use incomplete Cholesky decomposition for approximation
@@ -549,7 +550,7 @@ KPCRKHS_numerator = function(Y, X = NULL, Z, ky, kx, kxz, eps, appro = FALSE, to
 #'
 #' Calculate \eqn{\hat{\eta}_n} (the unconditional version of graph-based KPC) using directed K-NN graph or minimum spanning tree (MST).
 #'
-#' \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
+#' \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{\{(X_i,Y_i)\}_{i=1}^n} from \eqn{\mu}.
 #' For K-NN graph, ties will be broken at random. MST is found using package \code{emstreeR}.
 #' In particular,
 #' \deqn{\hat{\eta}_n:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n(n-1))^{-1}\sum_{i\neq j}k(Y_i,Y_j)},}
@@ -588,7 +589,7 @@ KMAc = function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2))
 #' Calculate \eqn{\hat{\eta}_n^{\mbox{lin}}} (the unconditional version of graph-based KPC) using directed K-NN graph or minimum spanning tree (MST).
 #' The computational complexity is O(nlog(n))
 #'
-#' \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{(X_1,Y_1),\ldots ,(X_n,Y_n)\sim \mu}.
+#' \eqn{\hat{\eta}_n} is an estimate of the population kernel measure of association, based on data \eqn{\{(X_i,Y_i)\}_{i=1}^n} from \eqn{\mu}.
 #' For K-NN graph, \eqn{\hat{\eta}_n} can be computed in near linear time (in \eqn{n}).
 #' In particular,
 #' \deqn{\hat{\eta}_n^{\mbox{lin}}:=\frac{n^{-1}\sum_{i=1}^n d_i^{-1}\sum_{j:(i,j)\in\mathcal{E}(G_n)} k(Y_i,Y_j)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}{n^{-1}\sum_{i=1}^n k(Y_i,Y_i)-(n-1)^{-1}\sum_{i=1}^{n-1} k(Y_i,Y_{i+1})}},
