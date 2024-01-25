@@ -363,7 +363,15 @@ KFOCI <- function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2
   estimateQFixedY <- function(id){
     return(TnKnn(Y, X[, id],k,Knn))
   }
-  seq_Q = parallel::mclapply(seq(1, p), estimateQFixedY, mc.cores = numCores)
+  if (.Platform$OS.type == "windows") {
+    cl <- parallel::makeCluster(numCores)
+    parallel::clusterEvalQ(cl, library(KPC))
+    parallel::clusterExport(cl, c("Y", "X", "k", "Knn", "estimateQFixedY"), 
+                            envir = environment())
+    seq_Q = parallel::parLapply(cl, seq(1, p), estimateQFixedY)
+  } else {
+    seq_Q = parallel::mclapply(seq(1, p), estimateQFixedY, mc.cores = numCores)
+  }
   seq_Q = unlist(seq_Q)
 
 
@@ -388,7 +396,13 @@ KFOCI <- function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2
     if (length(index_left) == 1) {
       seq_Q = estimateQFixedYandSubX(index_left[1])
     } else {
-      seq_Q = parallel::mclapply(index_left, estimateQFixedYandSubX, mc.cores = numCores)
+      if (.Platform$OS.type == "windows") {
+        parallel::clusterExport(cl, c("index_select", "count", "estimateQFixedYandSubX"), 
+                                envir = environment())
+        seq_Q = parallel::parLapply(cl, index_left, estimateQFixedYandSubX)
+      } else {
+        seq_Q = parallel::mclapply(index_left, estimateQFixedYandSubX, mc.cores = numCores)
+      }
       seq_Q = unlist(seq_Q)
     }
     Q[count + 1] = max(seq_Q)
@@ -398,6 +412,8 @@ KFOCI <- function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2
     count = count + 1
     if (verbose) print(paste("Variable",index_select[count],"is selected"))
   }
+  if (.Platform$OS.type == "windows")
+    parallel::stopCluster(cl) 
 
   return(index_select[1:count])
 }
@@ -466,7 +482,16 @@ KPCRKHS_VS <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::medi
   estimateQFixedY <- function(id){
     return(KPCRKHS_numerator(Y,NULL,X[,id],ky,NULL,kS(X,id),eps,appro,tol))
   }
-  seq_Q = parallel::mclapply(seq(1, p), estimateQFixedY, mc.cores = numCores)
+  if (.Platform$OS.type == "windows") {
+    cl <- parallel::makeCluster(numCores)
+    parallel::clusterEvalQ(cl, library(KPC))
+    parallel::clusterExport(cl, c("Y", "X", "ky", "kS", "eps", "appro", "tol", 
+                                  "KPCRKHS_numerator", "estimateQFixedY"), 
+                            envir = environment())
+    seq_Q = parallel::parLapply(cl, seq(1, p), estimateQFixedY) 
+  } else {
+    seq_Q = parallel::mclapply(seq(1, p), estimateQFixedY, mc.cores = numCores)
+  }
   seq_Q = unlist(seq_Q)
 
 
@@ -490,7 +515,13 @@ KPCRKHS_VS <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::medi
     if (length(index_left) == 1) {
       seq_Q = estimateQFixedYandSubX(index_left[1])
     } else {
-      seq_Q = parallel::mclapply(index_left, estimateQFixedYandSubX, mc.cores = numCores)
+      if (.Platform$OS.type == "windows") {
+        parallel::clusterExport(cl, c("index_select", "count", "estimateQFixedYandSubX"), 
+                                envir = environment())
+        seq_Q = parallel::parLapply(cl, index_left, estimateQFixedYandSubX)
+      } else {
+        seq_Q = parallel::mclapply(index_left, estimateQFixedYandSubX, mc.cores = numCores)
+      }
       seq_Q = unlist(seq_Q)
     }
     Q[count + 1] = max(seq_Q)
@@ -499,6 +530,8 @@ KPCRKHS_VS <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::medi
     count = count + 1
     if (verbose) print(paste("Variable",index_select[count],"is selected"))
   }
+  if (.Platform$OS.type == "windows")
+    parallel::stopCluster(cl)
 
   return(index_select[1:count])
 }
