@@ -488,10 +488,6 @@ KPCRKHS_VS <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::medi
     parallel::clusterExport(cl, c("Y", "X", "ky", "kS", "eps", "appro", "tol", 
                                   "KPCRKHS_numerator", "estimateQFixedY"), 
                             envir = environment())
-    # adding the non-exported function KPCRKHS_numerator seems to work,
-    # although https://stackoverflow.com/questions/38836341/parallelclusterexport-non-exported-library-package-function
-    # suggests that the following call is needed
-    #parallel::clusterCall(cl, assign, "KPCRKHS_numerator", KPCRKHS_numerator, envir = environment())
     seq_Q = parallel::parLapply(cl, seq(1, p), estimateQFixedY) 
   } else {
     seq_Q = parallel::mclapply(seq(1, p), estimateQFixedY, mc.cores = numCores)

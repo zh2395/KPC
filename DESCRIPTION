@@ -33,6 +33,6 @@ Encoding: UTF-8
 URL: https://www.jmlr.org/papers/v23/21-493.html,
         https://arxiv.org/abs/2012.14804
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Depends: R (>= 4.0.0), data.table, kernlab
 Imports: RANN, proxy, parallel, mlpack
