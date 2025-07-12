@@ -31,7 +31,8 @@ Description: Implementations of two empirical versions the kernel partial correl
 License: GPL-3
 Encoding: UTF-8
 URL: https://www.jmlr.org/papers/v23/21-493.html,
-        https://arxiv.org/abs/2012.14804
+        https://arxiv.org/abs/2012.14804,
+        https://github.com/zh2395/KPC
 LazyData: true
 RoxygenNote: 7.2.3
 Depends: R (>= 4.0.0), data.table, kernlab
