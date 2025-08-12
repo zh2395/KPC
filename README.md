@@ -87,13 +87,13 @@ p = 100
 set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
+KFOCI(Y, X, k=kernlab::rbfdot(1), Knn=1, numCores = 1)
 # 1 2 3
 
 # Install package 'olsrr'
 surgical = olsrr::surgical
 for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
-colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],kernlab::rbfdot(1/(2*median(dist(surgical$y))^2)),Knn=1)]
+colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],k=kernlab::rbfdot(1/(2*median(dist(surgical$y))^2)),Knn=1)]
 # "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 ```
 
@@ -210,7 +210,7 @@ y = matrix(0,n,9)
 for (i in 1:n) {
   y[i,] = as.numeric(R1(X[i,1])%*%R3(X[i,2]))
 }
-KFOCI(y, X, SO3ker, Knn=1, numCores = 1)
+KFOCI(y, X, k=SO3ker, Knn=1, numCores = 1)
 # 2 1
 ```
 
@@ -235,7 +235,7 @@ set.seed(1)
 X[,5:8] = rnorm(n*4)
 
 library(kernlab)
-KFOCI(Y, X, rbfdot(1/(2*median(dist(Y))^2)), Knn=1, numCores = 1)
+KFOCI(Y, X, k=rbfdot(1/(2*median(dist(Y))^2)), Knn=1, numCores = 1)
 # 1 2 3 4
 
 # define two kernels on histograms
@@ -243,9 +243,9 @@ k1 = function(a,b) return(1/prod(a+b+1))
 k2 = function(a,b) return(exp(-sum(sqrt(a+b))))
 class(k1) = class(k2) = "kernel"
 
-KFOCI(Y, X, k1, Knn=4, numCores = 1)
+KFOCI(Y, X, k=k1, Knn=4, numCores = 1)
 # 1 2 4 3
-KFOCI(Y, X, k2, Knn=4, numCores = 1)
+KFOCI(Y, X, k=k2, Knn=4, numCores = 1)
 # 1 2 4 3
 
 KPCgraph(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y))^2)),Knn = 2,trans_inv=TRUE)

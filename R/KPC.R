@@ -324,8 +324,9 @@ KPCRKHS = function(Y, X = NULL, Z, ky = kernlab::rbfdot(1/(2*stats::median(stats
 #' It is suggested to normalize the predictors before applying KFOCI.
 #' Euclidean distance is used for computing the K-NN graph and the MST.
 #'
-#' @param Y a matrix of responses (n by dy)
-#' @param X a matrix of predictors (n by dx)
+#' @param Y a matrix of responses (n by dy).
+#' @param X a matrix of predictors (n by dx).
+#' @param Z Integer vector of column indices in X to pre-condition on (forced), or NULL (no pre-conditioning).
 #' @param k a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g., Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.
 #' @param Knn a positive integer indicating the number of nearest neighbor; or "MST". The suggested choice of Knn is 0.05n for samples up to a few hundred observations. For large n, the suggested Knn is sublinear in n. That is, it may grow slower than any linear function of n. The computing time is approximately linear in Knn. A smaller Knn takes less time.
 #' @param num_features the number of variables to be selected, cannot be larger than dx. The default value is NULL and in that
@@ -334,89 +335,99 @@ KPCRKHS = function(Y, X = NULL, Z, ky = kernlab::rbfdot(1/(2*stats::median(stats
 #' @param numCores number of cores that are going to be used for parallelizing the process.
 #' @param verbose whether to print each selected variables during the forward stepwise algorithm
 #' @export
-#' @return The algorithm returns a vector of the indices from 1,...,dx of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
+#' @return The algorithm returns a vector of the indices from 1,...,dx from the non-pre-conditioned set of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
 #' @seealso \code{\link{KPCgraph}}, \code{\link{KPCRKHS}}, \code{\link{KPCRKHS_VS}}
 #' @examples
 #' n = 200
 #' p = 10
 #' X = matrix(rnorm(n * p), ncol = p)
 #' Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-#' KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores=1)
+#' KFOCI(Y, X, k=kernlab::rbfdot(1), Knn=1, numCores=1)
 #' # 1 2 3
 # code modified from Azadkia, M. and Chatterjee, S. (2019). A simple measure of conditional dependence.
-KFOCI <- function(Y, X, k = kernlab::rbfdot(1/(2*stats::median(stats::dist(Y))^2)), Knn = min(ceiling(NROW(Y)/20),20), num_features = NULL, stop = TRUE, numCores = parallel::detectCores(), verbose = FALSE){
-  if (!is.matrix(X)) X = as.matrix(X)
-  if (!is.matrix(Y)) Y = as.matrix(Y)
-  if ((nrow(Y) != nrow(X))) stop("Number of rows of Y and X should be equal.")
-  if (is.null(num_features)) num_features <- dim(X)[2]
-  if (num_features > ncol(X)) stop("Number of features should not be larger than maximum number of original features.")
+KFOCI <- function(Y, X, Z = NULL,
+                  k = kernlab::rbfdot(1 / (2 * stats::median(stats::dist(Y))^2)),
+                  Knn = min(ceiling(NROW(Y) / 20), 20),
+                  num_features = NULL,
+                  stop = TRUE,
+                  numCores = parallel::detectCores(),
+                  verbose = FALSE) {
+
+  if (!is.matrix(X)) X <- as.matrix(X)
+  if (!is.matrix(Y)) Y <- as.matrix(Y)
+  n <- nrow(Y); p <- ncol(X)
+  if (n != nrow(X)) stop("Number of rows of Y and X should be equal.")
+  Z <- if (is.null(Z)) integer(0) else sort(unique(as.integer(Z)))
+  if (length(Z) && (min(Z) < 1 || max(Z) > p)) stop("Z indices out of bounds for X.")
+  if (is.null(num_features)) num_features <- p - length(Z)
+  if (num_features > (p - length(Z))) stop("Number of features cannot be larger than non-pre-conditioned columns.")
   if ((floor(num_features) != num_features) || (num_features <= 0)) stop("Number of features should be a positive integer.")
   if (Knn != "MST") {
     if ((floor(Knn) != Knn) || (Knn <= 0)) stop("Knn should be a positive integer or the string MST.")
     if (Knn + 2 > nrow(X)) stop("n should be greater than Knn + 1")
   }
-  n = dim(Y)[1]
-  p = ncol(X)
-  Q = rep(0, num_features) # stores the values of Tn
-  index_select = rep(0, num_features)
-  # select the first variable
-  estimateQFixedY <- function(id){
-    return(TnKnn(Y, X[, id],k,Knn))
-  }
-  if (.Platform$OS.type == "windows") {
+
+  # Parallel setup
+  cl <- NULL
+  use_psock <- (.Platform$OS.type == "windows") && (numCores > 1L)
+  if (use_psock) {
     cl <- parallel::makeCluster(numCores)
-    parallel::clusterEvalQ(cl, library(KPC))
-    parallel::clusterExport(cl, c("Y", "X", "k", "Knn", "estimateQFixedY"), 
-                            envir = environment())
-    seq_Q = parallel::parLapply(cl, seq(1, p), estimateQFixedY)
-  } else {
-    seq_Q = parallel::mclapply(seq(1, p), estimateQFixedY, mc.cores = numCores)
+    on.exit(parallel::stopCluster(cl), add = TRUE)
+    parallel::clusterExport(cl, c("Y", "X", "k", "Knn"), envir = environment())
   }
-  seq_Q = unlist(seq_Q)
 
-
-  Q[1] = max(seq_Q)
-  if (Q[1] <= 0 & stop == TRUE) return(0)
-  index_max = min(which(seq_Q == Q[1]))
-  index_select[1] = index_max
-  if (verbose) print(paste("Variable",index_max,"is selected"))
-  count = 1
-
-  # select rest of the variables
-  while (count < num_features) {
-    seq_Q = rep(0, p - count)
-    # indices that have not been selected yet
-    index_left = setdiff(seq(1, p), index_select[1:count])
-
-    # find the next best feature
-    estimateQFixedYandSubX <- function(id){
-      return(TnKnn(Y, X[, c(index_select[1:count], id)],k,Knn))
-    }
-
-    if (length(index_left) == 1) {
-      seq_Q = estimateQFixedYandSubX(index_left[1])
+  # Helper function for loop
+  eval_Tn <- function(idx, idx_selected, ccount) {
+    if (use_psock) {
+      parallel::clusterExport(cl, c("idx_selected", "ccount"), envir = environment())
+      parallel::parLapply(
+        cl, idx,
+        function(j, idx_selected, ccount) {
+          KPC::TnKnn(Y, X[, c(idx_selected[seq_len(ccount)], j), drop = FALSE], k, Knn)
+        },
+        idx_selected = idx_selected, ccount = ccount
+      )
     } else {
-      if (.Platform$OS.type == "windows") {
-        parallel::clusterExport(cl, c("index_select", "count", "estimateQFixedYandSubX"), 
-                                envir = environment())
-        seq_Q = parallel::parLapply(cl, index_left, estimateQFixedYandSubX)
-      } else {
-        seq_Q = parallel::mclapply(index_left, estimateQFixedYandSubX, mc.cores = numCores)
-      }
-      seq_Q = unlist(seq_Q)
+      parallel::mclapply(
+        idx,
+        function(j) {
+          KPC::TnKnn(Y, X[, c(idx_selected[seq_len(ccount)], j), drop = FALSE], k, Knn)
+        },
+        mc.cores = numCores
+      )
     }
-    Q[count + 1] = max(seq_Q)
-    index_max = min(which(seq_Q == Q[count + 1]))
-    if (Q[count + 1] <= Q[count] & stop == TRUE) break
-    index_select[count + 1] = index_left[index_max]
-    count = count + 1
-    if (verbose) print(paste("Variable",index_select[count],"is selected"))
   }
-  if (.Platform$OS.type == "windows")
-    parallel::stopCluster(cl) 
 
-  return(index_select[1:count])
+  # Forward selection
+  index_select <- rep(0L, num_features + length(Z))
+  if (length(Z) > 0) index_select[seq_along(Z)] <- Z
+  count  <- length(Z)
+  last_Q <- if (count > 0) KPC::TnKnn(Y, X[, index_select[seq_len(count)], drop = FALSE], k, Knn) else -Inf
+
+  if (verbose && count > 0) {
+    cat(sprintf("Pre-conditioned covariate(s) %s chosen, T = %.3f\n",
+                paste(Z, collapse = ","), last_Q))
+  }
+
+  repeat {
+    if (count - length(Z) >= num_features) break
+    index_left <- setdiff(seq_len(p), index_select[seq_len(count)])
+    if (!length(index_left)) break
+
+    seq_Q  <- unlist(eval_Tn(index_left, index_select, count))
+    j_star <- index_left[which.max(seq_Q)]
+    best_Q <- max(seq_Q)
+
+    if (best_Q <= last_Q && isTRUE(stop)) break
+    count <- count + 1
+    index_select[count] <- j_star
+    last_Q <- best_Q
+    if (verbose) cat(sprintf("Added X[%d], T = %.3f\n", j_star, last_Q))
+  }
+
+  setdiff(index_select[seq_len(count)], Z)
 }
+
 
 #' Variable selection with RKHS estimator
 #'
@@ -485,10 +496,10 @@ KPCRKHS_VS <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::medi
   if (.Platform$OS.type == "windows") {
     cl <- parallel::makeCluster(numCores)
     parallel::clusterEvalQ(cl, library(KPC))
-    parallel::clusterExport(cl, c("Y", "X", "ky", "kS", "eps", "appro", "tol", 
-                                  "KPCRKHS_numerator", "estimateQFixedY"), 
+    parallel::clusterExport(cl, c("Y", "X", "ky", "kS", "eps", "appro", "tol",
+                                  "KPCRKHS_numerator", "estimateQFixedY"),
                             envir = environment())
-    seq_Q = parallel::parLapply(cl, seq(1, p), estimateQFixedY) 
+    seq_Q = parallel::parLapply(cl, seq(1, p), estimateQFixedY)
   } else {
     seq_Q = parallel::mclapply(seq(1, p), estimateQFixedY, mc.cores = numCores)
   }
@@ -516,7 +527,7 @@ KPCRKHS_VS <- function(Y, X, num_features, ky = kernlab::rbfdot(1/(2*stats::medi
       seq_Q = estimateQFixedYandSubX(index_left[1])
     } else {
       if (.Platform$OS.type == "windows") {
-        parallel::clusterExport(cl, c("index_select", "count", "estimateQFixedYandSubX"), 
+        parallel::clusterExport(cl, c("index_select", "count", "estimateQFixedYandSubX"),
                                 envir = environment())
         seq_Q = parallel::parLapply(cl, index_left, estimateQFixedYandSubX)
       } else {
