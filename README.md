@@ -71,7 +71,7 @@ KPCRKHS(y, x, z, k, k, k, 1e-3/n^(0.4), appro = T, tol = 1e-5)
 The inputs are 
 `Y` : a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx); 
-`Z`: an integer vector of column indices in `X` to pre-condition on. These variables are always included in the conditioning set and are not re-selected. Formally, the goal is then to find $S \subset \{1, \dotsc, dx\}\setminus Z$ such that $Y \perp X_{S^C}\mid (X_Z, X_S)$. The default `NULL` corresponds to no pre-conditioning;
+`Z`: an integer vector of column indices in `X` to pre-condition on. These variables are always included in the conditioning set and are not re-selected. Formally, the goal is then to find $S \subset \lbrace 1, \dotsc, dx\rbrace\setminus Z$ such that $Y \perp X_{S^c}\mid (X_Z, X_S)$. The default `NULL` corresponds to no pre-conditioning;
 `k`: the kernel function used for Y;
 `Knn`: a positive integer indicating the number of nearest neighbor; or "MST". The suggested choice of Knn is 0.05n for samples up to a few hundred observations. For large n, the suggested Knn is sublinear in n. That is, it may grow slower than any linear function of n. The computing time is approximately linear in Knn. A smaller Knn takes less time.
 `num_features`: the number of variables to be selected from the non-pre-conditioned set (which cannot be larger than $dx - |Z|$). The default value of `num_features` is `NULL` and in that
