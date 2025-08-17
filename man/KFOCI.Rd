@@ -21,14 +21,14 @@ KFOCI(
 
 \item{X}{a matrix of predictors (n by dx).}
 
-\item{Z}{Integer vector of column indices in X to pre-condition on (forced), or NULL (no pre-conditioning).}
+\item{Z}{Integer vector of column indices in \code{X} to pre-condition on. These variables are always included in the conditioning set and are not re-selected. The default \code{NULL} corresponds to no pre-conditioning.}
 
 \item{k}{a function \eqn{k(y, y')} of class \code{kernel}. It can be the kernel implemented in \code{kernlab} e.g., Gaussian kernel: \code{rbfdot(sigma = 1)}, linear kernel: \code{vanilladot()}.}
 
 \item{Knn}{a positive integer indicating the number of nearest neighbor; or "MST". The suggested choice of Knn is 0.05n for samples up to a few hundred observations. For large n, the suggested Knn is sublinear in n. That is, it may grow slower than any linear function of n. The computing time is approximately linear in Knn. A smaller Knn takes less time.}
 
-\item{num_features}{the number of variables to be selected, cannot be larger than dx. The default value is NULL and in that
-case it will be set equal to dx. If \code{stop == TRUE} (see below), then num_features is the maximal number of variables to be selected.}
+\item{num_features}{the number of variables to be selected from the non-pre-conditioned set, cannot be larger than \eqn{dx - |Z|}. The default value is NULL and in that
+case it will be set equal to \eqn{dx - |Z|}. If \code{stop == TRUE} (see below), then \code{num_features} is the maximal number of variables to be selected (selection may stop earlier).}
 
 \item{stop}{If \code{stop == TRUE}, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till \code{num_features} many variables are selected. If \code{stop == FALSE} then exactly \code{num_features} many variables are selected.}
 
@@ -44,7 +44,7 @@ Variable selection with KPC using directed K-NN graph or minimum spanning tree (
 }
 \details{
 A stepwise forward selection of variables using KPC. At each step it selects the \eqn{X_j} that maximizes
-\eqn{\hat{\rho^2}(Y,X_j |}selected \eqn{X_i)}.
+\eqn{\hat{\rho^2}(Y,X_j |}selected \eqn{X_i)}. When \code{Z} is specified, the algorithm conditions on those variables throughout, i.e. the formal goal is then to find a subset \eqn{S \subset \{1, \dotsc, dx\}} such that \eqn{Y \perp X_{S^C}\mid (X_Z, X_S)}.
 It is suggested to normalize the predictors before applying KFOCI.
 Euclidean distance is used for computing the K-NN graph and the MST.
 }

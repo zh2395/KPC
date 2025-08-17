@@ -71,15 +71,16 @@ KPCRKHS(y, x, z, k, k, k, 1e-3/n^(0.4), appro = T, tol = 1e-5)
 The inputs are 
 `Y` : a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx); 
+`Z`: an integer vector of column indices in `X` to pre-condition on. These variables are always included in the conditioning set and are not re-selected. Formally, the goal is then to find $S \subset \{1, \dotsc, dx\}$ such that $Y \perp X_{S^C}\mid (X_Z, X_S)$. The default `NULL` corresponds to no pre-conditioning;
 `k`: the kernel function used for Y;
 `Knn`: a positive integer indicating the number of nearest neighbor; or "MST". The suggested choice of Knn is 0.05n for samples up to a few hundred observations. For large n, the suggested Knn is sublinear in n. That is, it may grow slower than any linear function of n. The computing time is approximately linear in Knn. A smaller Knn takes less time.
-`num_features`: the number of variables to be selected (which cannot be larger than dx). The default value of `num_features` is `NULL` and in that
-case it will be set equal to dx;
+`num_features`: the number of variables to be selected from the non-pre-conditioned set (which cannot be larger than $dx - |Z|$). The default value of `num_features` is `NULL` and in that
+case it will be set equal to $dx - |Z|$. If `stop == TRUE` (see below), then `num_features` is the maximal number of variables to be selected (selection may stop earlier);
 `stop`: If `stop == TRUE`, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till `num_features` many variables are selected. If `stop == FALSE` then exactly `num_features` many variables are selected; 
 `numCores`: number of cores that are going to be used for parallelizing the process;
 `verbose`: whether to print each selected variables during the forward stepwise algorithm (default `FALSE`);
 
-It is suggested to normalize the predictors before applying `KFOCI`. `KFOCI` returns a vector of the indices, from 1,...,dx, of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
+It is suggested to normalize the predictors before applying `KFOCI`. `KFOCI` returns a vector of the indices, from 1,...,dx, from the non-pre-conditioned set of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
 
 ``` r
 n = 200
