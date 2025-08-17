@@ -44,7 +44,7 @@ Variable selection with KPC using directed K-NN graph or minimum spanning tree (
 }
 \details{
 A stepwise forward selection of variables using KPC. At each step it selects the \eqn{X_j} that maximizes
-\eqn{\hat{\rho^2}(Y,X_j |}selected \eqn{X_i)}. When \code{Z} is specified, the algorithm conditions on those variables throughout, i.e. the formal goal is then to find a subset \eqn{S \subset \{1, \dotsc, dx\}} such that \eqn{Y \perp X_{S^C}\mid (X_Z, X_S)}.
+\eqn{\hat{\rho^2}(Y,X_j |}selected \eqn{X_i)}. When \code{Z} is specified, the algorithm conditions on those variables throughout, i.e. the formal goal is then to find a subset \eqn{S \subset \{1, \dotsc, dx\}\setminus Z} such that \eqn{Y \perp X_{S^C}\mid (X_Z, X_S)}.
 It is suggested to normalize the predictors before applying KFOCI.
 Euclidean distance is used for computing the K-NN graph and the MST.
 }
