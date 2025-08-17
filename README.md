@@ -71,15 +71,16 @@ KPCRKHS(y, x, z, k, k, k, 1e-3/n^(0.4), appro = T, tol = 1e-5)
 The inputs are 
 `Y` : a matrix of responses (n by dy);
 `X`: a matrix of predictors (n by dx); 
+`Z`: an integer vector of column indices in `X` to pre-condition on. These variables are always included in the conditioning set and are not re-selected. Formally, the goal is then to find $S \subset \lbrace 1, \dotsc, dx\rbrace\setminus Z$ such that $Y \perp X_{S^c}\mid (X_Z, X_S)$. The default `NULL` corresponds to no pre-conditioning;
 `k`: the kernel function used for Y;
 `Knn`: a positive integer indicating the number of nearest neighbor; or "MST". The suggested choice of Knn is 0.05n for samples up to a few hundred observations. For large n, the suggested Knn is sublinear in n. That is, it may grow slower than any linear function of n. The computing time is approximately linear in Knn. A smaller Knn takes less time.
-`num_features`: the number of variables to be selected (which cannot be larger than dx). The default value of `num_features` is `NULL` and in that
-case it will be set equal to dx;
+`num_features`: the number of variables to be selected from the non-pre-conditioned set (which cannot be larger than $dx - |Z|$). The default value of `num_features` is `NULL` and in that
+case it will be set equal to $dx - |Z|$. If `stop == TRUE` (see below), then `num_features` is the maximal number of variables to be selected (selection may stop earlier);
 `stop`: If `stop == TRUE`, then the automatic stopping criterion (stops at the first instance of negative Tn, as mentioned in the paper) will be implemented and continued till `num_features` many variables are selected. If `stop == FALSE` then exactly `num_features` many variables are selected; 
 `numCores`: number of cores that are going to be used for parallelizing the process;
 `verbose`: whether to print each selected variables during the forward stepwise algorithm (default `FALSE`);
 
-It is suggested to normalize the predictors before applying `KFOCI`. `KFOCI` returns a vector of the indices, from 1,...,dx, of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
+It is suggested to normalize the predictors before applying `KFOCI`. `KFOCI` returns a vector of the indices, from 1,...,dx, from the non-pre-conditioned set of the selected variables in the same order that they were selected. The variables at the front are expected to be more informative in predicting Y.
 
 ``` r
 n = 200
@@ -87,13 +88,13 @@ p = 100
 set.seed(1)
 X = matrix(rnorm(n * p), ncol = p)
 Y = X[, 1] * X[, 2] + sin(X[, 1] * X[, 3])
-KFOCI(Y, X, kernlab::rbfdot(1), Knn=1, numCores = 1)
+KFOCI(Y, X, k=kernlab::rbfdot(1), Knn=1, numCores = 1)
 # 1 2 3
 
 # Install package 'olsrr'
 surgical = olsrr::surgical
 for (i in 1:9) surgical[,i] = (surgical[,i] - mean(surgical[,i]))/sd(surgical[,i])
-colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],kernlab::rbfdot(1/(2*median(dist(surgical$y))^2)),Knn=1)]
+colnames(surgical)[KFOCI(surgical[,9],surgical[,1:8],k=kernlab::rbfdot(1/(2*median(dist(surgical$y))^2)),Knn=1)]
 # "enzyme_test" "pindex" "liver_test"  "alc_heavy"
 ```
 
@@ -210,7 +211,7 @@ y = matrix(0,n,9)
 for (i in 1:n) {
   y[i,] = as.numeric(R1(X[i,1])%*%R3(X[i,2]))
 }
-KFOCI(y, X, SO3ker, Knn=1, numCores = 1)
+KFOCI(y, X, k=SO3ker, Knn=1, numCores = 1)
 # 2 1
 ```
 
@@ -235,7 +236,7 @@ set.seed(1)
 X[,5:8] = rnorm(n*4)
 
 library(kernlab)
-KFOCI(Y, X, rbfdot(1/(2*median(dist(Y))^2)), Knn=1, numCores = 1)
+KFOCI(Y, X, k=rbfdot(1/(2*median(dist(Y))^2)), Knn=1, numCores = 1)
 # 1 2 3 4
 
 # define two kernels on histograms
@@ -243,9 +244,9 @@ k1 = function(a,b) return(1/prod(a+b+1))
 k2 = function(a,b) return(exp(-sum(sqrt(a+b))))
 class(k1) = class(k2) = "kernel"
 
-KFOCI(Y, X, k1, Knn=4, numCores = 1)
+KFOCI(Y, X, k=k1, Knn=4, numCores = 1)
 # 1 2 4 3
-KFOCI(Y, X, k2, Knn=4, numCores = 1)
+KFOCI(Y, X, k=k2, Knn=4, numCores = 1)
 # 1 2 4 3
 
 KPCgraph(Y,X[,c(2,3,4)],X[,1],rbfdot(1/(2*median(dist(Y))^2)),Knn = 2,trans_inv=TRUE)

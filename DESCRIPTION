@@ -1,7 +1,7 @@
 Package: KPC
 Type: Package
 Title: Kernel Partial Correlation Coefficient
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(person("Zhen", "Huang", email = "zh2395@columbia.edu",
     role = c("aut", "cre")),
     person("Nabarun", "Deb", email = "nd2560@columbia.edu",
@@ -34,6 +34,6 @@ URL: https://www.jmlr.org/papers/v23/21-493.html,
         https://arxiv.org/abs/2012.14804,
         https://github.com/zh2395/KPC
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Depends: R (>= 4.0.0), data.table, kernlab
 Imports: RANN, proxy, parallel, mlpack
