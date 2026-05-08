@@ -7,6 +7,8 @@ Authors@R: c(person("Zhen", "Huang", email = "zh2395@columbia.edu",
     person("Nabarun", "Deb", email = "nd2560@columbia.edu",
     role = "ctb"),
     person("Bodhisattva", "Sen", email = "bodhi@stat.columbia.edu",
+    role = "ctb"),
+    person("Benjamin", "Lang", email = "benjamin_lang@icloud.com",
     role = "ctb"))
 Maintainer: Zhen Huang <zh2395@columbia.edu>
 Description: Implementations of two empirical versions the kernel partial correlation (KPC) coefficient
@@ -26,14 +28,13 @@ Description: Implementations of two empirical versions the kernel partial correl
     correlation coefficient – a measure of conditional dependence” (URL listed below). When X is
     empty, KPC measures the unconditional dependence between Y and Z, which has been described
     in Deb, N., P. Ghosal, and B. Sen (2020), “Measuring association on topological spaces using
-    kernels and geometric graphs” <arXiv:2010.01768>, and it is implemented in the functions
+    kernels and geometric graphs” <doi:10.48550/arXiv.2010.01768>, and it is implemented in the functions
     KMAc() and Klin() in this package. The latter can be computed in near linear time.
 License: GPL-3
 Encoding: UTF-8
 URL: https://www.jmlr.org/papers/v23/21-493.html,
-        https://arxiv.org/abs/2012.14804,
-        https://github.com/zh2395/KPC
+        https://arxiv.org/abs/2012.14804, https://github.com/zh2395/KPC
 LazyData: true
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.3
 Depends: R (>= 4.0.0), data.table, kernlab
 Imports: RANN, proxy, parallel, mlpack
