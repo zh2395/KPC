@@ -35,6 +35,6 @@ Encoding: UTF-8
 URL: https://www.jmlr.org/papers/v23/21-493.html,
         https://arxiv.org/abs/2012.14804, https://github.com/zh2395/KPC
 LazyData: true
-RoxygenNote: 7.3.3
-Depends: R (>= 4.0.0), data.table, kernlab
-Imports: RANN, proxy, parallel, mlpack
+Depends: R (>= 4.0.0), kernlab
+Imports: data.table, RANN, proxy, parallel, mlpack
+Config/roxygen2/version: 8.0.0

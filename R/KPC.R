@@ -1,3 +1,6 @@
+#' @importFrom data.table :=
+NULL
+
 #' Tn with geometric graphs
 #'
 #' Calculate \eqn{T_n} using directed K-NN graph or minimum spanning tree (MST).
@@ -160,7 +163,6 @@ TnMST = function(Y,X,k) {
 #' @param Knn a positive integer indicating the number of nearest neighbor to use; or "MST". A small Knn (e.g., Knn=1) is recommended for an accurate estimate of the population KPC.
 #' @param trans_inv TRUE or FALSE. Is \eqn{k(y, y)} free of \eqn{y}?
 #'
-#' @import data.table
 #' @export
 #' @return The algorithm returns a real number which is the estimated KPC.
 #'
