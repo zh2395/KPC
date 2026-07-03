@@ -119,7 +119,7 @@ TnMST = function(Y,X,k) {
 
   if (!is.data.frame(X)) X = as.data.frame(X)
   # compute the Euclidean MST
-  if (packageVersion(mlpack) < "4.8.0") {
+  if (packageVersion("mlpack") < "4.8.0") {
     out=mlpack::emst(X)$output
   } else {
     out=mlpack::emst(X)
