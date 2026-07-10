@@ -1,3 +1,6 @@
+# KPC 0.1.4
+- Update for mlpack 4.8.0 API change.
+
 # KPC 0.1.3
 
 ## Changes in this version:
