@@ -119,7 +119,11 @@ TnMST = function(Y,X,k) {
 
   if (!is.data.frame(X)) X = as.data.frame(X)
   # compute the Euclidean MST
-  out=mlpack::emst(X)$output
+  if (packageVersion("mlpack") < "4.8.0") {
+    out=mlpack::emst(X)$output
+  } else {
+    out=mlpack::emst(X)
+  }
   # (n-1) by 3 matrix
   # the first and second columns correspond to "from" and "to" indices
   # the index starts from 0
